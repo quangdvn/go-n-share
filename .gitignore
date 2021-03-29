@@ -1,0 +1,31 @@
+.DS_Store
+
+test.js
+
+# Auth Service
+/auth/dist
+/auth/node_modules
+/auth/db_data
+/auth/Dockerfile.dev
+/auth/docker-compose.yaml
+
+# Staff Service
+/staff/dist
+/staff/node_modules
+/staff/db_data
+/staff/Dockerfile.dev
+/staff/docker-compose.yaml
+
+# Driver Service
+/driver/dist
+/driver/node_modules
+/driver/db_data
+/driver/Dockerfile.dev
+/driver/docker-compose.yaml
+
+# Graphql Server
+/graphql/node_modules
+/graphql/dist
+
+# Common
+/common

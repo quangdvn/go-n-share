@@ -1,0 +1,42 @@
+version: "3"
+services:
+  auth-db:
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=auth
+    container_name: auth-db
+    volumes:
+      - ./db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+  auth-app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    environment:
+      - APP_PORT=
+      - SESSION_NAME=
+      - SESSION_SECRET=
+      - JWT_SECRET=
+      - REDIS_HOST=
+      - REDIS_PORT=
+      - REDIS_PASSWORD=
+      - DB_HOST=
+      - DB_PORT=
+      - DB_USERNAME=
+      - DB_PASSWORD=
+      - DB_NAME=
+      - NATS_URL=
+    ports:
+      - "3000:3000"
+    container_name: auth-app
+    depends_on:
+      - auth-db
+    volumes:
+      - .:/app
+      - /app/node_modules
+volumes:
+  db_data:
