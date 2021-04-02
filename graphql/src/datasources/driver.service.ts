@@ -1,10 +1,12 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
 import { DriverInfo, DriverInfoData } from '../payloads/response.interface';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 export class DriverService extends RESTDataSource {
   constructor() {
     super();
-    this.baseURL = 'http://localhost:3002/driver';
+    this.baseURL = process.env.DRIVER_URL;
   }
 
   willSendRequest(req: RequestOptions) {

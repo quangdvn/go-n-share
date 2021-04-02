@@ -62,7 +62,6 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('trust proxy', true);
-  app.setGlobalPrefix('auth');
   const logger = new Logger('Bootstrap');
 
   const RedisStore = connectRedis(session);
@@ -95,6 +94,9 @@ async function bootstrap() {
 
   await app.listen(process.env.APP_PORT, () => {
     logger.log(`Auth Service is listening on port ${process.env.APP_PORT} ...`);
+    if (__prod__) {
+      logger.log('Auth Service is running on production ...');
+    }
   });
 }
 

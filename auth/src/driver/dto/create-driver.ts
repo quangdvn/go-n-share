@@ -1,7 +1,6 @@
-import { DriverRoles, Location, StaffRoles } from '@quangdvnnnn/go-n-share';
+import { DriverRoles, Location } from '@quangdvnnnn/go-n-share';
 import {
   IsIn,
-  IsInt,
   IsNotEmpty,
   IsString,
   Length,

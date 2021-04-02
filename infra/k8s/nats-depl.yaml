@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats
+  template:
+    metadata:
+      labels:
+        app: nats
+    spec:
+      containers:
+        - name: nats
+          image: nats
+          args: ["-p", "4222", "-m", "8222", "-c", "nats-server.conf", "-DV"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-serv
+spec:
+  selector:
+    app: nats
+  type: NodePort
+  ports:
+    - name: client
+      port: 4222
+      nodePort: 30036
+      targetPort: 4222
+    - name: monitoring
+      protocol: TCP
+      port: 8222
+      targetPort: 8222

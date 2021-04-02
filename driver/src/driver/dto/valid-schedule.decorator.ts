@@ -23,7 +23,8 @@ export function ValidSchedule(
 
 @ValidatorConstraint({ name: 'ValidSchedule', async: false })
 export class ValidScheduleConstraint implements ValidatorConstraintInterface {
-  validate(value: number[], args: ValidationArguments) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  validate(value: number[], _args: ValidationArguments) {
     return value.every(
       (num, i) =>
         (i === 0 &&

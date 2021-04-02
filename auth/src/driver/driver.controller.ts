@@ -15,16 +15,13 @@ import {
   StaffRoles,
 } from '@quangdvnnnn/go-n-share';
 import { AUTH_SERVICE } from '../constants';
-import {
-  CreateDriverResponse,
-  LoginResponse,
-} from '../constants/custom-interface';
+import { CreateDriverResponse } from '../constants/custom-interface';
 import { RequireAuthStaffGuard } from '../guards/require-auth-staff.guard';
 import { Roles } from '../guards/roles.decorator';
 import { StaffRolesGuard } from '../guards/staff-roles.guard';
-import { LogInDto } from './dto/log-in.dto';
 import { DriverService } from './driver.service';
 import { CreateDriverDto } from './dto/create-driver';
+import { LogInDto } from './dto/log-in.dto';
 
 const DriverCreated =
   process.env.NODE_ENV === 'production'
