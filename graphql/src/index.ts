@@ -2,7 +2,7 @@ import { CurrentUserMiddleware } from '@quangdvnnnn/go-n-share';
 import { ApolloServer } from 'apollo-server-express';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import session from 'express-session';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
@@ -101,10 +101,14 @@ const main = async () => {
 
   apolloServer.applyMiddleware({ app, cors: true });
 
+  app.get('/', (_req: Request, res: Response) => {
+    res.status(200).send('Welcome to Gateway server ...');
+  });
+
   app.listen(parseInt(process.env.APP_PORT), () => {
-    console.log(`Server is listening on port ${process.env.APP_PORT}`);
+    console.log(`Server is listening on port ${process.env.APP_PORT} ....`);
     if (__prod__) {
-      console.log('GraphQL Service is running in production ...');
+      console.log('GraphQL Service is running in production ....');
     }
   });
 };
