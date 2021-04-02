@@ -14,8 +14,34 @@ import { RedisClient } from './redis';
 import { DriverResolver } from './resolvers/driver';
 import { HelloResolver } from './resolvers/hello';
 import { StaffResolver } from './resolvers/staff';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const main = async () => {
+  if (!process.env.APP_PORT) {
+    throw new Error('APP_PORT missing');
+  }
+
+  if (!process.env.SESSION_NAME) {
+    throw new Error('SESSION_NAME missing');
+  }
+
+  if (!process.env.SESSION_SECRET) {
+    throw new Error('SESSION_SECRET missing');
+  }
+
+  if (!process.env.REDIS_HOST) {
+    throw new Error('REDIS_HOST missing');
+  }
+
+  if (!process.env.REDIS_PORT) {
+    throw new Error('REDIS_PORT missing');
+  }
+
+  if (!process.env.REDIS_PASSWORD) {
+    throw new Error('REDIS_PASSWORD missing');
+  }
+
   const app = express();
   app.set('trust proxy', 1);
   app.use(
@@ -38,8 +64,8 @@ const main = async () => {
       store: new RedisStore({
         client: RedisClient,
       }),
-      name: 'qid',
-      secret: 'quangdvn',
+      name: process.env.SESSION_NAME,
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -59,6 +85,8 @@ const main = async () => {
       resolvers: [HelloResolver, DriverResolver, StaffResolver],
       validate: false,
     }),
+    introspection: true,
+    playground: true,
     dataSources: () => {
       return {
         driverService: new DriverService(),
@@ -73,8 +101,11 @@ const main = async () => {
 
   apolloServer.applyMiddleware({ app, cors: true });
 
-  app.listen(4000, () => {
-    console.log('Server is listening on port 4000');
+  app.listen(parseInt(process.env.APP_PORT), () => {
+    console.log(`Server is listening on port ${process.env.APP_PORT}`);
+    if (__prod__) {
+      console.log('GraphQL Service is running in production ...');
+    }
   });
 };
 

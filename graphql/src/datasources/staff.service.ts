@@ -1,10 +1,12 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
 import { StaffInfo, StaffInfoData } from '../payloads/response.interface';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 export class StaffService extends RESTDataSource {
   constructor() {
     super();
-    this.baseURL = 'http://localhost:3001/staff';
+    this.baseURL = process.env.STAFF_URL;
   }
 
   willSendRequest(req: RequestOptions) {

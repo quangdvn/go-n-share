@@ -7,7 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { IRequest } from '@quangdvnnnn/go-n-share';
 
-
 @Injectable()
 export class StaffRolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
@@ -27,6 +26,6 @@ function matchRoles(pathRole: string, curRole: string): boolean {
   if (pathRole === curRole) return true;
 
   throw new ForbiddenException(
-    'Tài khoản không được phép thực hiện chức năng này'
+    'Tài khoản không được phép thực hiện chức năng này',
   );
 }

@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
-import { DRIVER_SERVICE } from './constants';
+import { DRIVER_SERVICE, __prod__ } from './constants';
 
 const microserviceOptions: MicroserviceOptions = {
   transport: Transport.NATS,
@@ -48,7 +48,6 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('trust proxy', true);
-  app.setGlobalPrefix('driver');
   const logger = new Logger('Bootstrap');
 
   const microservice = app.connectMicroservice(microserviceOptions);
@@ -58,6 +57,9 @@ async function bootstrap() {
       logger.log(
         `Driver Service is listening on port ${process.env.APP_PORT} ...`,
       );
+      if (__prod__) {
+        logger.log('Driver Service is running on production ...');
+      }
     });
   });
 }

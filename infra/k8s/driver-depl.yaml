@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driver-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: driver
+  template:
+    metadata:
+      labels:
+        app: driver
+    spec:
+      containers:
+        - name: driver
+          image: quangdvn/gns-driver
+          imagePullPolicy: Always
+          env:
+            - name: APP_PORT
+              value: "3000"
+            - name: DB_TYPE
+              value: mongodb+srv
+            - name: DB_HOST
+              value: driver.esulg.mongodb.net
+            - name: DB_PORT
+              value: "27017"
+            - name: DB_USERNAME
+              value: quangdvn
+            - name: DB_PASSWORD
+              value: 1s7v2p6x
+            - name: DB_NAME
+              value: driver
+            - name: NATS_URL
+              value: nats://nats-serv:4222
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: driver-serv
+spec:
+  selector:
+    app: driver
+  ports:
+    - name: driver
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

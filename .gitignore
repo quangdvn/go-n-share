@@ -8,6 +8,7 @@ test.js
 /auth/db_data
 /auth/Dockerfile.dev
 /auth/docker-compose.yaml
+/auth/coverage
 
 # Staff Service
 /staff/dist
@@ -15,6 +16,7 @@ test.js
 /staff/db_data
 /staff/Dockerfile.dev
 /staff/docker-compose.yaml
+/staff/coverage
 
 # Driver Service
 /driver/dist
@@ -22,10 +24,15 @@ test.js
 /driver/db_data
 /driver/Dockerfile.dev
 /driver/docker-compose.yaml
+/driver/coverage
 
 # Graphql Server
 /graphql/node_modules
 /graphql/dist
+/graphql/.env
 
 # Common
 /common
+
+#Infra
+/infra/k8s-dev

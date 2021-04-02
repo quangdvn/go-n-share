@@ -1,7 +1,12 @@
 import { ConnectionOptions } from 'typeorm';
 import { DB_TYPE } from './constants';
 
-const typeOrmConfig: ConnectionOptions = {
+type TypeOrmConnection = ConnectionOptions & {
+  factories: string[];
+  seeds: string[];
+};
+
+const typeOrmConfig: TypeOrmConnection = {
   type: DB_TYPE,
   host: process.env.DB_HOST,
   port: +process.env.DB_PORT,
@@ -20,6 +25,8 @@ const typeOrmConfig: ConnectionOptions = {
   cli: {
     migrationsDir: 'src/migrations',
   },
+  factories: [__dirname + '/database/factories/**/*.js'],
+  seeds: [__dirname + '/database/seeds/**/*.js'],
 };
 
 export = typeOrmConfig;

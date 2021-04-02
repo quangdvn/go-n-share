@@ -1,7 +1,10 @@
 import Redis from 'redis';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export const RedisClient = Redis.createClient({
-  host: 'redis-18451.c252.ap-southeast-1-1.ec2.cloud.redislabs.com',
-  port: 18451,
-  password: '123456',
+  host: process.env.REDIS_HOST,
+  port: +(process.env.REDIS_PORT as string),
+  password: process.env.REDIS_PASSWORD,
 });
