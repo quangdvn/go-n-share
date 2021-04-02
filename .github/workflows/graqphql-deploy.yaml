@@ -1,4 +1,4 @@
-name: driver-deploy
+name: graphql-deploy
 
 on:
   push:
