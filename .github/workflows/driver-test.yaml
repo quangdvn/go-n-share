@@ -1,6 +1,9 @@
 name: driver-test
 
 on:
+  push:
+    paths:
+      - "driver/**"
   pull_request:
     paths:
       - "driver/**"

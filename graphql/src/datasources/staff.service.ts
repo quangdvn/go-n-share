@@ -1,5 +1,8 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
-import { StaffInfo, StaffInfoData } from '../payloads/response.interface';
+import {
+  StaffInfoResponse,
+  StaffInfoData,
+} from '../payloads/response.interface';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -19,7 +22,7 @@ export class StaffService extends RESTDataSource {
   }
 
   async getInfo(): Promise<StaffInfoData | null> {
-    const res = await this.get<StaffInfo>('/me');
+    const res = await this.get<StaffInfoResponse>('/me');
     return res.success ? res.data : null;
   }
 }

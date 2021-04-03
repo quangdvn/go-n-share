@@ -1,12 +1,6 @@
-export interface DriverInfo {
+export interface DriverInfoResponse {
   success: boolean;
   data: DriverInfoData;
-}
-
-export interface LocationData {
-  _id: string;
-  name: string;
-  subname: string;
 }
 
 export interface DriverInfoData {
@@ -27,7 +21,13 @@ export interface DriverInfoData {
   __v: number;
 }
 
-export interface StaffInfo {
+export interface LocationData {
+  _id: string;
+  name: string;
+  subname: string;
+}
+
+export interface StaffInfoResponse {
   success: boolean;
   data: StaffInfoData;
 }
@@ -41,4 +41,13 @@ export interface StaffInfoData {
   workingStatus: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface LogInResponse {
+  success: boolean;
+  data: string;
+}
+
+export interface LogOutResponse {
+  success: boolean;
 }
