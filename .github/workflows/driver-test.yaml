@@ -37,4 +37,4 @@ jobs:
       - name: Run Linter
         run: cd driver && yarn run lint
       - name: Run Test
-      - run: cd driver && yarn run test
+        run: cd driver && yarn run test

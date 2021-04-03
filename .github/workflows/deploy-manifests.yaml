@@ -19,7 +19,7 @@ jobs:
         with:
           token: ${{ secrets.DO_ACCESS_TOKEN }}
       - name: Save new cluster
-        run: doctl kubernetes cluster kubeconfig save quangdvn-ticketing
+        run: doctl kubernetes cluster kubeconfig save go-n-share
       - name: Get k8s nodes
         run: kubectl get nodes
       - name: Apply new changes to k8s DO

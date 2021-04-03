@@ -37,4 +37,4 @@ jobs:
       - name: Run Linter
         run: cd auth && yarn run lint
       - name: Run Test
-      - run: cd auth && yarn run test
+        run: cd auth && yarn run test
