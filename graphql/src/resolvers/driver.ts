@@ -48,7 +48,12 @@ class DriverInfo {
 @Resolver()
 export class DriverResolver {
   @Query(() => DriverInfo)
-  driver(@Ctx() ctx: any) {
+  driverInfo(@Ctx() ctx: any) {
     return ctx.dataSources.driverService.getInfo();
+  }
+
+  @Query(() => String)
+  driverService(@Ctx() ctx: any) {
+    return ctx.dataSources.driverService.getHello();
   }
 }

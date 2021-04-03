@@ -24,7 +24,12 @@ class StaffInfo {
 @Resolver()
 export class StaffResolver {
   @Query(() => StaffInfo)
-  staff(@Ctx() ctx: any) {
+  staffInfo(@Ctx() ctx: any) {
     return ctx.dataSources.staffService.getInfo();
+  }
+
+  @Query(() => String)
+  staffService(@Ctx() ctx: any) {
+    return ctx.dataSources.staffService.getHello();
   }
 }

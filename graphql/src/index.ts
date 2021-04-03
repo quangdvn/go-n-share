@@ -15,6 +15,8 @@ import { DriverResolver } from './resolvers/driver';
 import { HelloResolver } from './resolvers/hello';
 import { StaffResolver } from './resolvers/staff';
 import * as dotenv from 'dotenv';
+import { AuthResolver } from './resolvers/auth';
+import { AuthService } from './datasources/auth.service';
 dotenv.config();
 
 const main = async () => {
@@ -40,6 +42,18 @@ const main = async () => {
 
   if (!process.env.REDIS_PASSWORD) {
     throw new Error('REDIS_PASSWORD missing');
+  }
+
+  if (!process.env.DRIVER_URL) {
+    throw new Error('DRIVER_URL missing');
+  }
+
+  if (!process.env.STAFF_URL) {
+    throw new Error('STAFF_URL missing');
+  }
+
+  if (!process.env.AUTH_URL) {
+    throw new Error('AUTH_URL missing');
   }
 
   const app = express();
@@ -82,7 +96,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, DriverResolver, StaffResolver],
+      resolvers: [HelloResolver, DriverResolver, StaffResolver, AuthResolver],
       validate: false,
     }),
     introspection: true,
@@ -91,6 +105,7 @@ const main = async () => {
       return {
         driverService: new DriverService(),
         staffService: new StaffService(),
+        authService: new AuthService(),
       };
     },
     context: ({ req, res }): GraphContext => ({

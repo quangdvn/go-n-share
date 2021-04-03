@@ -1,5 +1,8 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
-import { DriverInfo, DriverInfoData } from '../payloads/response.interface';
+import {
+  DriverInfoResponse,
+  DriverInfoData,
+} from '../payloads/response.interface';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -22,7 +25,7 @@ export class DriverService extends RESTDataSource {
   }
 
   async getInfo(): Promise<DriverInfoData | null> {
-    const res = await this.get<DriverInfo>('schedule/me');
+    const res = await this.get<DriverInfoResponse>('schedule/me');
     return res.success ? res.data : null;
   }
 }
