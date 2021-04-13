@@ -33,6 +33,20 @@ spec:
                 name: staff-serv
                 port:
                   number: 3000
+          - path: /api/vehicle/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: vehicle-serv
+                port:
+                  number: 3000
+          - path: /api/trip/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: trip-serv
+                port:
+                  number: 3000
           - path: /api/gateway/(.*)
             pathType: Prefix
             backend:

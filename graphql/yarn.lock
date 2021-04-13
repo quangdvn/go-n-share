@@ -107,9 +107,9 @@
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
 "@quangdvnnnn/go-n-share@^1.0.17":
-  version "1.0.21"
-  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.21.tgz#2c2514601b3f2d99e5f31bf3de59e42b77211842"
-  integrity sha512-lZycSW7BfJqAZ6lCh5Cj+AZGyUza8a79TIFCluCPaMamcFL/0WWh+jPv/qs36NIkV1hFLLlFkGfxpsDMuuVCkA==
+  version "1.0.29"
+  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.29.tgz#3fc7f61aab29d6de0607cff6337e869c27e796c6"
+  integrity sha512-cJU7i5efzGPvPV1rhK6jBoWNpRcNy6ZCgTjZZ4/PSZxX0RTgHH8Hofvl26ULhYzCjWzcPxsZmhZvhXbrvvDMZA==
   dependencies:
     "@types/express" "^4.17.9"
     "@types/express-session" "^1.17.3"

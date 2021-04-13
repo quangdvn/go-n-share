@@ -17,6 +17,8 @@ import { StaffResolver } from './resolvers/staff';
 import * as dotenv from 'dotenv';
 import { AuthResolver } from './resolvers/auth';
 import { AuthService } from './datasources/auth.service';
+import { VehicleService } from './datasources/vehicle.service';
+import { VehicleResolver } from './resolvers/vehicle';
 dotenv.config();
 
 const main = async () => {
@@ -54,6 +56,10 @@ const main = async () => {
 
   if (!process.env.AUTH_URL) {
     throw new Error('AUTH_URL missing');
+  }
+
+  if (!process.env.VEHICLE_URL) {
+    throw new Error('VEHICLE_URL missing');
   }
 
   const app = express();
@@ -96,7 +102,13 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, DriverResolver, StaffResolver, AuthResolver],
+      resolvers: [
+        HelloResolver,
+        DriverResolver,
+        StaffResolver,
+        AuthResolver,
+        VehicleResolver,
+      ],
       validate: false,
     }),
     introspection: true,
@@ -106,6 +118,7 @@ const main = async () => {
         driverService: new DriverService(),
         staffService: new StaffService(),
         authService: new AuthService(),
+        vehicleService: new VehicleService(),
       };
     },
     context: ({ req, res }): GraphContext => ({
