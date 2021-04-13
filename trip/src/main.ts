@@ -106,7 +106,7 @@ async function bootstrap() {
 
   const microservice = app.connectMicroservice(microserviceOptions);
   microservice.listen(() => {
-    logger.log('Staff Microservice is running ...');
+    logger.log('Trip Microservice is running ...');
     app.listen(process.env.APP_PORT, () => {
       logger.log(
         `Trip Service is listening on port ${process.env.APP_PORT}  ....`,
