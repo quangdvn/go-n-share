@@ -1,13 +1,4 @@
-import {
-  Arg,
-  Ctx,
-  Field,
-  ID,
-  Int,
-  ObjectType,
-  Query,
-  Resolver,
-} from 'type-graphql';
+import { Arg, Ctx, Field, ObjectType, Query, Resolver } from 'type-graphql';
 import { LogInType } from '../constants';
 
 @ObjectType()

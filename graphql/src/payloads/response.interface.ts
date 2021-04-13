@@ -1,6 +1,13 @@
+import { Location as LocationEnum } from '@quangdvnnnn/go-n-share';
+
 export interface DriverInfoResponse {
   success: boolean;
   data: DriverInfoData;
+}
+
+export interface GetAvailableDriversResponse {
+  success: boolean;
+  data: DriverInfoData[];
 }
 
 export interface DriverInfoData {
@@ -13,12 +20,41 @@ export interface DriverInfoData {
   age: number;
   fullname: string;
   location: LocationData;
+  trips: TripData[];
   phone: string;
   role: string;
   username: string;
   createdAt: Date;
   updatedAt: Date;
   __v: number;
+}
+
+export interface GetAvailableCoachesResponse {
+  success: boolean;
+  data: GetAvailableCoachesData[];
+}
+
+export interface GetAvailableCoachesData {
+  id: number;
+  numberPlate: string;
+  isAvailable: boolean;
+  name: string;
+  type: VehicleTypeData;
+  trips: TripData[];
+}
+
+export interface VehicleTypeData {
+  seatNumber: number;
+  name: string;
+}
+
+export interface TripData {
+  id: number;
+  tripStatus: string;
+  departureDate: string;
+  departureTime: number;
+  arriveDate: string;
+  arriveTime: number;
 }
 
 export interface LocationData {
@@ -50,4 +86,18 @@ export interface LogInResponse {
 
 export interface LogOutResponse {
   success: boolean;
+}
+
+export interface GetRoutesResponse {
+  success: boolean;
+  data: GetRoutesData[];
+}
+
+export interface GetRoutesData {
+  routeId: number;
+  departureLocation: LocationEnum;
+  arriveLocation: LocationEnum;
+  departureTerminal: string;
+  arriveTerminal: string;
+  drivingDuration: number;
 }

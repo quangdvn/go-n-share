@@ -26,6 +26,22 @@ test.js
 /driver/docker-compose.yaml
 /driver/coverage
 
+# Vehicle Service
+/vehicle/dist
+/vehicle/node_modules
+/vehicle/db_data
+/vehicle/Dockerfile.dev
+/vehicle/docker-compose.yaml
+/vehicle/coverage
+
+# Trip Service
+/trip/dist
+/trip/node_modules
+/trip/db_data
+/trip/Dockerfile.dev
+/trip/docker-compose.yaml
+/trip/coverage
+
 # Graphql Server
 /graphql/node_modules
 /graphql/dist
@@ -33,6 +49,9 @@ test.js
 
 # Common
 /common
+
+# Test
+/test
 
 #Infra
 /infra/k8s-dev

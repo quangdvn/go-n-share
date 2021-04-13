@@ -22,6 +22,7 @@ const mockDriver = (): Driver => ({
   schedule: [1, 2, 3],
   username: 'abcabc',
   workingStatus: WorkingStatus.WORKING,
+  trips: [],
 });
 
 describe('DriverService', () => {
