@@ -5,11 +5,13 @@ import {
   HttpCode,
   Post,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   CoachFetchingMess,
   Messages,
+  RouteFetchingMess,
   StaffRoles,
 } from '@quangdvnnnn/go-n-share';
 import { RequireAuthStaffGuard } from '../guards/require-auth-staff.guard';
@@ -23,6 +25,11 @@ const CoachFetching =
     ? Messages.CoachFetching
     : Messages.CabFetchingDev;
 
+const RouteFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.RouteFetching
+    : Messages.RouteFetchingDev;
+
 @Controller('coach')
 export class CoachController {
   constructor(private readonly coachService: CoachService) {}
@@ -30,6 +37,22 @@ export class CoachController {
   @MessagePattern(CoachFetching)
   async getCoachDetail(@Payload() data: CoachFetchingMess) {
     return this.coachService.getCoachDetail(data);
+  }
+
+  @MessagePattern(RouteFetching)
+  async getCoaches(@Payload() data: RouteFetchingMess) {
+    const returnData = await this.coachService.getCoaches(data);
+    if (!returnData) {
+      return {
+        success: false,
+        data: null,
+      };
+    } else {
+      return {
+        success: true,
+        data: returnData,
+      };
+    }
   }
 
   @Get('/routes')
@@ -49,7 +72,7 @@ export class CoachController {
   @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)
   @Roles(StaffRoles.SCHEDULING)
   async getAvailableCoaches(
-    @Body() getAvailableCoachesDto: GetAvailableCoachesDto,
+    @Body(ValidationPipe) getAvailableCoachesDto: GetAvailableCoachesDto,
   ) {
     const data = await this.coachService.getAvailableCoaches(
       getAvailableCoachesDto,

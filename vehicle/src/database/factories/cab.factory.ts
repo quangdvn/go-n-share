@@ -7,7 +7,7 @@ define(Cab, () => {
   const numbers = [29, 14, 43, 41];
   const letters = ['A', 'B'];
 
-  const locationId = genRand(3, 1);
+  const locationId = genRand(4, 1);
   const typeId = genRand(3, 1);
 
   const cab = new Cab();

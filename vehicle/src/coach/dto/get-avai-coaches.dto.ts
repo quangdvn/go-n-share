@@ -8,6 +8,7 @@ export class GetAvailableCoachesDto {
   readonly routeId: number;
 
   @IsNotEmpty({ message: 'Ca đi không được trống' })
+  @IsInt({ message: 'Mã chặng đi phải là số' })
   @IsIn([TripShift.MORNING, TripShift.AFTERNOON, TripShift.NIGHT], {
     message: 'Ca đi không hợp lệ',
   })

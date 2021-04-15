@@ -58,9 +58,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: nginx-serv
+                name: client-serv
                 port:
-                  number: 80
+                  number: 3000
   tls:
     - hosts:
         - www.gns.quangdvn.me
