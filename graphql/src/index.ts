@@ -19,6 +19,8 @@ import { AuthResolver } from './resolvers/auth';
 import { AuthService } from './datasources/auth.service';
 import { VehicleService } from './datasources/vehicle.service';
 import { VehicleResolver } from './resolvers/vehicle';
+import { TripResolver } from './resolvers/trip';
+import { TripService } from './datasources/trip.service';
 dotenv.config();
 
 const main = async () => {
@@ -60,6 +62,10 @@ const main = async () => {
 
   if (!process.env.VEHICLE_URL) {
     throw new Error('VEHICLE_URL missing');
+  }
+
+  if (!process.env.TRIP_URL) {
+    throw new Error('TRIP_URL missing');
   }
 
   const app = express();
@@ -108,6 +114,7 @@ const main = async () => {
         StaffResolver,
         AuthResolver,
         VehicleResolver,
+        TripResolver,
       ],
       validate: false,
     }),
@@ -119,6 +126,7 @@ const main = async () => {
         staffService: new StaffService(),
         authService: new AuthService(),
         vehicleService: new VehicleService(),
+        tripService: new TripService(),
       };
     },
     context: ({ req, res }): GraphContext => ({

@@ -1,4 +1,4 @@
-import { TripShift, TripStatus } from '@quangdvnnnn/go-n-share';
+import { Location, TripShift, TripStatus } from '@quangdvnnnn/go-n-share';
 import {
   BaseEntity,
   Column,
@@ -20,11 +20,17 @@ export class Trip extends BaseEntity {
   @Column({ type: 'enum', enum: TripShift })
   departureTime: TripShift;
 
+  @Column({ type: 'enum', enum: Location })
+  departureLocation: Location;
+
   @Column()
   arriveDate: string;
 
   @Column()
   arriveTime: TripShift;
+
+  @Column({ type: 'enum', enum: Location })
+  arriveLocation: Location;
 
   @Column({ type: 'enum', enum: TripStatus, default: TripStatus.UNCONFIRM })
   tripStatus: TripStatus;

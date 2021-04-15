@@ -25,16 +25,10 @@ export function ValidDate(
 export class ValidDateConstraint implements ValidatorConstraintInterface {
   validate(value: any) {
     if (typeof value === 'string') {
-      // console.log(value);
-      // const test = dayjs('2021/04/17');
-
-      // const test1 = dayjs().add(8, 'days');
-
-      // console.log(test.diff(test1, 'day'));
-
       return (
         /^[1-9]\d*[-/](0[1-9]|1[0-2])[-/](0[1-9]|[12]\d|3[01])$/.test(value) &&
-        dayjs(value, 'YYYY-MM-DD').isValid()
+        dayjs(value, 'YYYY-MM-DD').isValid() &&
+        dayjs().startOf('day').diff(dayjs(value)) <= 0
       );
     }
     return false;

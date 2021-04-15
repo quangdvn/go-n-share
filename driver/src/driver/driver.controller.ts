@@ -3,13 +3,19 @@ import {
   Controller,
   Get,
   HttpCode,
+  Inject,
   Logger,
   Post,
   Req,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  EventPattern,
+  MessagePattern,
+  Payload,
+} from '@nestjs/microservices';
 import {
   DriverCreatedEvent,
   DriverFetchingMess,
@@ -18,7 +24,9 @@ import {
   Messages,
   StaffRoles,
   TripCreatedEvent,
+  TripStatusUpdatedEvent,
 } from '@quangdvnnnn/go-n-share';
+import { DRIVER_SERVICE } from '../constants';
 import {
   CreateScheduleResponse,
   GetInfoResponse,
@@ -28,6 +36,7 @@ import { RequireAuthStaffGuard } from '../guards/require-auth-staff.guard';
 import { Roles } from '../guards/roles.decorator';
 import { StaffRolesGuard } from '../guards/staff-roles.guard';
 import { DriverService } from './driver.service';
+import { ConfirmTripDto } from './dto/confirm-trip.dto';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { GetAvailableDriversDto } from './dto/get-avai-drivers.dto';
 
@@ -41,26 +50,35 @@ const TripCreated =
     ? Events.TripCreated
     : Events.TripCreatedDev;
 
+const TripStatusUpdated =
+  process.env.NODE_ENV === 'production'
+    ? Events.TripStatusUpdated
+    : Events.TripStatusUpdatedDev;
+
 const DriverFetching =
   process.env.NODE_ENV === 'production'
     ? Messages.DriverFetching
     : Messages.DriverFetchingDev;
 
-const logger = new Logger('EventSubcribe');
+const subLogger = new Logger('EventSubcribe');
+const pubLogger = new Logger('EventPublish');
 
-@Controller('/schedule')
+@Controller('/driver')
 export class DriverController {
-  constructor(private readonly driverService: DriverService) {}
+  constructor(
+    private readonly driverService: DriverService,
+    @Inject(DRIVER_SERVICE) private readonly client: ClientProxy,
+  ) {}
 
   @EventPattern(DriverCreated)
   async createDriver(@Payload() data: DriverCreatedEvent) {
-    logger.log('Event received successfully...');
+    subLogger.log('Event received successfully...');
     return this.driverService.createDriver(data);
   }
 
   @EventPattern(TripCreated)
   async addTrip(@Payload() data: TripCreatedEvent) {
-    logger.log('Event received successfully...');
+    subLogger.log('Event received successfully...');
     return this.driverService.addTrip(data);
   }
 
@@ -74,7 +92,7 @@ export class DriverController {
     }
   }
 
-  @Post('/available')
+  @Post('/available-schedule')
   @HttpCode(200)
   @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)
   @Roles(StaffRoles.SCHEDULING)
@@ -109,7 +127,36 @@ export class DriverController {
     };
   }
 
-  @Post('/')
+  @Post('/confirm-trip')
+  @HttpCode(200)
+  @UseGuards(RequireAuthDriverGuard)
+  async confirmTripStatus(
+    @Req() req: IRequest,
+    @Body(ValidationPipe) confirmTripDto: ConfirmTripDto,
+  ) {
+    const driverId = req.currentUser.data.id;
+    const { driver } = await this.driverService.confirmTripStatus(
+      confirmTripDto,
+      driverId,
+    );
+
+    const event: TripStatusUpdatedEvent = {
+      driverId: driverId,
+      tripId: confirmTripDto.tripId,
+      status: confirmTripDto.status,
+    };
+
+    this.client
+      .emit<string, TripStatusUpdatedEvent>(TripStatusUpdated, event)
+      .subscribe(() => pubLogger.log('Event published successfully...'));
+
+    return {
+      success: true,
+      data: driver,
+    };
+  }
+
+  @Post('/update-schedule')
   @HttpCode(201)
   @UseGuards(RequireAuthDriverGuard)
   async createSchedule(

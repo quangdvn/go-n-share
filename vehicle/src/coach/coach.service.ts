@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CoachFetchingMess } from '@quangdvnnnn/go-n-share';
+import { CoachFetchingMess, RouteFetchingMess } from '@quangdvnnnn/go-n-share';
 import dayjs from 'dayjs';
 import { getManager } from 'typeorm';
 import { Route } from '../common/route.entity';
+import { RouteInformation } from '../constant/custom-interface';
 import { isDayBetween } from '../utils/isDayBetween';
 import { Coach } from './coach.entity';
 import { GetAvailableCoachesDto } from './dto/get-avai-coaches.dto';
@@ -11,12 +12,59 @@ import { GetAvailableCoachesDto } from './dto/get-avai-coaches.dto';
 export class CoachService {
   constructor() {}
 
+  async getCoaches(data: RouteFetchingMess) {
+    const returnRoutes: RouteInformation[] = await getManager().query(
+      `
+      SELECT R.id as routeId, R.drivingDuration, R.basePrice, 
+      T1.name AS departureTerminal, T1.address AS departureAddress, 
+      T1.latitude AS departureLatitude, T1.longitude AS departureLongitude,
+      T2.name AS arriveTerminal, T2.address AS arriveAddress, 
+      T2.latitude AS arriveLatitude, T2.longitude AS arriveLongitude
+      FROM routes AS R
+      JOIN terminals AS T1 ON R.departureId = T1.id
+      JOIN terminals AS T2 ON R.arriveId = T2.id
+      JOIN locations AS L1 ON T1.locationId = L1.id
+      JOIN locations AS L2 ON T2.locationId = L2.id
+      WHERE L1.subname = ? AND L2.subname = ?
+    `,
+      [data.departure, data.arrive],
+    );
+    if (returnRoutes.length === 0) {
+      return null;
+    }
+    const routeIds = returnRoutes.map((route) => route.routeId);
+
+    const filterCoaches = await getManager()
+      .createQueryBuilder(Coach, 'coach')
+      .innerJoinAndSelect('coach.trips', 'trip')
+      .innerJoinAndSelect('coach.type', 'type')
+      .where('coach.routeId IN (:...routeIds)', { routeIds: routeIds })
+      .andWhere(`trip.tripStatus = 'ready'`)
+      .getMany();
+    if (filterCoaches.length === 0) {
+      return null;
+    }
+
+    const returnCoaches = filterCoaches.map((coach) => {
+      const name = coach.type.name + ' #' + coach.id;
+      return { name: name, ...coach };
+    });
+
+    return { routes: returnRoutes, coaches: returnCoaches };
+  }
+
   async getCoachDetail(data: CoachFetchingMess) {
     const returnData = await getManager().query(
       `
-      SELECT R.drivingDuration
+      SELECT R.drivingDuration, 
+      L1.subname AS departureLocation, 
+      L2.subname AS arriveLocation
       FROM coaches AS C
       JOIN routes AS R ON C.routeId = R.id
+      JOIN terminals AS T1 ON R.departureId = T1.id
+      JOIN terminals AS T2 ON R.arriveId = T2.id
+      JOIN locations AS L1 ON T1.locationId = L1.id
+      JOIN locations AS L2 ON T2.locationId = L2.id
       WHERE C.id = ? AND C.isAvailable = 1
     `,
       [data.id],
@@ -26,18 +74,6 @@ export class CoachService {
   }
 
   async getAvailableCoaches(getAvailableCoachesDto: GetAvailableCoachesDto) {
-    // const data = await getManager().query(
-    //   `
-    //   SELECT DISTINCT
-    //     C.id, C.numberPlate, CONCAT(CT.name, ' #', C.id) AS coachName, T.tripStatus, T.departureTime
-    //   FROM coaches AS C
-    //   JOIN coachTypes AS CT ON C.typeId = CT.id
-    //   LEFT JOIN trips AS T ON C.id = T.coachId
-    //   WHERE C.routeId = ? AND C.isAvailable = 1
-    //   ORDER BY C.id
-    // `,
-    //   [routeId],
-    // );
     const { departureDate, routeId, shift } = getAvailableCoachesDto;
     const { drivingDuration } = await Route.findOne(routeId);
     const data = await Coach.find({

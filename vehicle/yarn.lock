@@ -685,9 +685,9 @@
     node-fetch "^2.6.1"
 
 "@quangdvnnnn/go-n-share@^1.0.21":
-  version "1.0.29"
-  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.29.tgz#3fc7f61aab29d6de0607cff6337e869c27e796c6"
-  integrity sha512-cJU7i5efzGPvPV1rhK6jBoWNpRcNy6ZCgTjZZ4/PSZxX0RTgHH8Hofvl26ULhYzCjWzcPxsZmhZvhXbrvvDMZA==
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.32.tgz#68c085e85285f48abba46459534f1fdd6c1dcb90"
+  integrity sha512-QY+AYx7E37MjGoaDXejLabvLANQSplCLNulOiAdQOozccoSuFjrisvJuLej4TsvNyhD0D5gADgk4ComXE0agEw==
   dependencies:
     "@types/express" "^4.17.9"
     "@types/express-session" "^1.17.3"
@@ -1912,18 +1912,11 @@ color-convert@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-2.0.1.tgz#72d3a68d598c9bdb3af2ad1e84f21d896abd4de3"
   integrity sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==
-  dependencies:
-    color-name "~1.1.4"
 
 color-name@1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
   integrity sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=
-
-color-name@~1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
-  integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
 colorette@^1.2.1:
   version "1.2.2"

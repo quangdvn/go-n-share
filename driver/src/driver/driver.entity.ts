@@ -7,6 +7,7 @@ import {
 } from '@quangdvnnnn/go-n-share';
 import mongoose, { Document } from 'mongoose';
 import { Location } from './location.entity';
+import { Location as LocationEnum } from '@quangdvnnnn/go-n-share';
 
 export type DriverDocument = Driver & Document;
 
@@ -16,14 +17,19 @@ export type TripInterface = {
   departureTime: number;
   arriveDate: string;
   arrriveTime: number;
+  departureLocation: LocationEnum;
+  arriveLocation: LocationEnum;
+  tripStatus?: TripStatus;
 };
 
 const tripSchema = new mongoose.Schema({
   id: Number,
   departureDate: String,
   departureTime: Number,
+  departureLocation: String,
   arriveDate: String,
   arrriveTime: Number,
+  arriveLocation: String,
   tripStatus: {
     type: TripStatus,
     default: TripStatus.UNCONFIRM,

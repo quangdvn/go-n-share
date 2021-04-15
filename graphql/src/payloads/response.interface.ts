@@ -101,3 +101,45 @@ export interface GetRoutesData {
   arriveTerminal: string;
   drivingDuration: number;
 }
+
+export interface SearchTripResponse {
+  success: boolean;
+  data: SearchTripData[];
+}
+
+export interface SearchTripData {
+  routeId: number;
+  drivingDuration: number;
+  basePrice: number;
+  departureTerminal: string;
+  departureAddress: string;
+  departureLatitude: string;
+  departureLongitude: string;
+  arriveTerminal: string;
+  arriveAddress: string;
+  arriveLatitude: string;
+  arriveLongitude: string;
+  coaches: CoachData[];
+}
+
+export interface CoachData {
+  id: number;
+  routeId: number;
+  name: string;
+  numberPlate: string;
+  isAvailable: boolean;
+  seatNumber: number;
+  trips: CoachTripData[];
+}
+
+export interface CoachTripData {
+  id: number;
+  departureDate: string;
+  departureTime: number;
+  departureLocation: LocationEnum;
+  arriveDate: string;
+  arriveTime: number;
+  arriveLocation: LocationEnum;
+  tripStatus: string;
+  coachId: number;
+}

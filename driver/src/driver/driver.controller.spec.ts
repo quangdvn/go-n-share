@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { DRIVER_SERVICE } from '../constants';
 import { DriverController } from './driver.controller';
 import { DriverService } from './driver.service';
 
@@ -12,7 +13,13 @@ describe('DriverController', () => {
         {
           provide: DriverService,
           useValue: {
-            getAll: jest.fn(),
+            get: jest.fn(),
+          },
+        },
+        {
+          provide: DRIVER_SERVICE,
+          useValue: {
+            get: jest.fn(),
           },
         },
       ],

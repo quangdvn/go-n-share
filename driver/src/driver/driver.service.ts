@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { Model } from 'mongoose';
 import { isDayBetween } from '../utils/isDayBetween';
 import { Driver, DriverDocument, TripInterface } from './driver.entity';
+import { ConfirmTripDto } from './dto/confirm-trip.dto';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { GetAvailableDriversDto } from './dto/get-avai-drivers.dto';
 import { Location, LocationDocument } from './location.entity';
@@ -39,6 +40,8 @@ export class DriverService {
     const curDriver = await this.driverModel.findOne({
       id: driverId,
       workingStatus: WorkingStatus.WORKING,
+      hasAssignedTrip: false,
+      isVerify: true,
     });
     if (!curDriver) {
       return false;
@@ -46,21 +49,47 @@ export class DriverService {
     return true;
   }
 
+  async confirmTripStatus(confirmTripDto: ConfirmTripDto, driverId: number) {
+    const curDriver = await this.driverModel
+      .findOne({
+        id: driverId,
+        workingStatus: WorkingStatus.WORKING,
+      })
+      .populate('location');
+    if (!curDriver) {
+      throw new BadRequestException('Đã xảy ra lỗi hệ thống');
+    }
+    const curTrip = curDriver.trips.find(
+      (trip) => trip.id === confirmTripDto.tripId,
+    );
+    if (!curTrip) {
+      throw new BadRequestException('Chuyến đi không tồn tại');
+    }
+    curTrip.tripStatus = confirmTripDto.status;
+    await curDriver.save();
+
+    return { driver: curDriver, trip: curTrip };
+  }
+
   async addTrip({ tripData }: TripCreatedEvent) {
     const firstTrip: TripInterface = {
       id: tripData[0].id,
       departureDate: tripData[0].departureDate,
       departureTime: tripData[0].departureTime,
+      departureLocation: tripData[0].departureLocation,
       arriveDate: tripData[0].arriveDate,
       arrriveTime: tripData[0].arriveTime,
+      arriveLocation: tripData[0].arriveLocation,
     };
 
     const secondTrip: TripInterface = {
       id: tripData[1].id,
       departureDate: tripData[1].departureDate,
       departureTime: tripData[1].departureTime,
+      departureLocation: tripData[1].departureLocation,
       arriveDate: tripData[1].arriveDate,
       arrriveTime: tripData[1].arriveTime,
+      arriveLocation: tripData[1].arriveLocation,
     };
     await this.driverModel.findOneAndUpdate(
       { id: tripData[0].driverId },
