@@ -28,7 +28,7 @@
     "schema:sync": "npx ./node_modules/typeorm/cli.js --config /dist/typeorm.config.js schema:sync",
     "seed:config": "npx ./node_modules/typeorm-seeding/dist/cli.js -n /dist/typeorm.config.js config",
     "seed:run": "npx ./node_modules/typeorm-seeding/dist/cli.js -n /dist/typeorm.config.js seed",
-    "db:setup": "yarn run schema:drop && yarn run typeorm:run && yarn run seed:run"
+    "db:setup": "yarn run schema:drop && yarn run typeorm:run"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.1",

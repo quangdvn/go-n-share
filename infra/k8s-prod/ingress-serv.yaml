@@ -47,6 +47,13 @@ spec:
                 name: trip-serv
                 port:
                   number: 3000
+          - path: /api/booking/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: booking-serv
+                port:
+                  number: 3000
           - path: /api/gateway/(.*)
             pathType: Prefix
             backend:

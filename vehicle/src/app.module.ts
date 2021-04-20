@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { CabModule } from './cab/cab.module';
 import { CoachModule } from './coach/coach.module';
 import { TripModule } from './trip/trip.module';
+import { TransitModule } from './transit/transit.module';
 import * as connectionOptions from './typeorm.config';
 
 @Module({
@@ -13,6 +14,7 @@ import * as connectionOptions from './typeorm.config';
     CabModule,
     CoachModule,
     TripModule,
+    TransitModule,
   ],
   controllers: [AppController],
   providers: [AppService],

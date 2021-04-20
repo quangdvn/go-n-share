@@ -4,10 +4,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { Transit } from '../transit/transit.entity';
 
 @Unique([
   'departureDate',
@@ -48,6 +50,12 @@ export class Trip extends BaseEntity {
 
   @Column()
   driverId: number;
+
+  @OneToOne(() => Transit, (transit) => transit.trip)
+  transit: Transit;
+
+  @Column({ type: 'int', default: 0 })
+  bookedSeat: number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -19,10 +19,14 @@ import {
 import {
   DriverCreatedEvent,
   DriverFetchingMess,
+  DriverRoles,
   Events,
   IRequest,
   Messages,
   StaffRoles,
+  TransitCreatedEvent,
+  TransitDriverFetchingMess,
+  TransitStatusUpdatedEvent,
   TripCreatedEvent,
   TripStatusUpdatedEvent,
 } from '@quangdvnnnn/go-n-share';
@@ -31,11 +35,13 @@ import {
   CreateScheduleResponse,
   GetInfoResponse,
 } from '../constants/custom-interface';
+import { DriverRolesGuard } from '../guards/driver-roles.guard';
 import { RequireAuthDriverGuard } from '../guards/require-auth-driver.guard';
 import { RequireAuthStaffGuard } from '../guards/require-auth-staff.guard';
 import { Roles } from '../guards/roles.decorator';
 import { StaffRolesGuard } from '../guards/staff-roles.guard';
 import { DriverService } from './driver.service';
+import { ConfirmTransitDto } from './dto/confirm-transit.dto';
 import { ConfirmTripDto } from './dto/confirm-trip.dto';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { GetAvailableDriversDto } from './dto/get-avai-drivers.dto';
@@ -50,15 +56,30 @@ const TripCreated =
     ? Events.TripCreated
     : Events.TripCreatedDev;
 
+const TransitCreated =
+  process.env.NODE_ENV === 'production'
+    ? Events.TransitCreated
+    : Events.TransitCreatedDev;
+
 const TripStatusUpdated =
   process.env.NODE_ENV === 'production'
     ? Events.TripStatusUpdated
     : Events.TripStatusUpdatedDev;
 
+const TransitStatusUpdated =
+  process.env.NODE_ENV === 'production'
+    ? Events.TransitStatusUpdated
+    : Events.TransitStatusUpdatedDev;
+
 const DriverFetching =
   process.env.NODE_ENV === 'production'
     ? Messages.DriverFetching
     : Messages.DriverFetchingDev;
+
+const TransitDriverFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.TransitDriverFetching
+    : Messages.TransitDriverFetchingDev;
 
 const subLogger = new Logger('EventSubcribe');
 const pubLogger = new Logger('EventPublish');
@@ -82,6 +103,12 @@ export class DriverController {
     return this.driverService.addTrip(data);
   }
 
+  @EventPattern(TransitCreated)
+  async addTransit(@Payload() data: TransitCreatedEvent) {
+    subLogger.log('Event received successfully...');
+    return this.driverService.addTransit(data);
+  }
+
   @MessagePattern(DriverFetching)
   async getDriverDetail(@Payload() data: DriverFetchingMess) {
     const res = await this.driverService.getDriverDetail(data.id);
@@ -90,6 +117,12 @@ export class DriverController {
     } else {
       return false;
     }
+  }
+
+  @MessagePattern(TransitDriverFetching)
+  async getTransitDrivers(@Payload() data: TransitDriverFetchingMess) {
+    const res = await this.driverService.getTransitDrivers(data);
+    return res;
   }
 
   @Post('/available-schedule')
@@ -127,9 +160,10 @@ export class DriverController {
     };
   }
 
-  @Post('/confirm-trip')
+  @Post('/confirm-fixed-trip')
   @HttpCode(200)
-  @UseGuards(RequireAuthDriverGuard)
+  @UseGuards(RequireAuthDriverGuard, DriverRolesGuard)
+  @Roles(DriverRoles.FIXED_TRIP)
   async confirmTripStatus(
     @Req() req: IRequest,
     @Body(ValidationPipe) confirmTripDto: ConfirmTripDto,
@@ -148,6 +182,36 @@ export class DriverController {
 
     this.client
       .emit<string, TripStatusUpdatedEvent>(TripStatusUpdated, event)
+      .subscribe(() => pubLogger.log('Event published successfully...'));
+
+    return {
+      success: true,
+      data: driver,
+    };
+  }
+
+  @Post('/confirm-transit-trip')
+  @HttpCode(200)
+  @UseGuards(RequireAuthDriverGuard, DriverRolesGuard)
+  @Roles(DriverRoles.TRANSIT_TRIP)
+  async confirmTransitStatus(
+    @Req() req: IRequest,
+    @Body(ValidationPipe) confirmTransitDto: ConfirmTransitDto,
+  ) {
+    const driverId = req.currentUser.data.id;
+    const { driver } = await this.driverService.confirmTransitStatus(
+      confirmTransitDto,
+      driverId,
+    );
+
+    const event: TransitStatusUpdatedEvent = {
+      driverId: driverId,
+      transitId: confirmTransitDto.transitId,
+      status: confirmTransitDto.status,
+    };
+
+    this.client
+      .emit<string, TransitStatusUpdatedEvent>(TransitStatusUpdated, event)
       .subscribe(() => pubLogger.log('Event published successfully...'));
 
     return {

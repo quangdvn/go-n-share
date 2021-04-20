@@ -42,6 +42,14 @@ test.js
 /trip/docker-compose.yaml
 /trip/coverage
 
+# Booking Service
+/booking/dist
+/booking/node_modules
+/booking/db_data
+/booking/Dockerfile.dev
+/booking/docker-compose.yaml
+/booking/coverage
+
 # Graphql Server
 /graphql/node_modules
 /graphql/dist

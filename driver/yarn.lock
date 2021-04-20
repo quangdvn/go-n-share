@@ -702,9 +702,9 @@
     node-fetch "^2.6.1"
 
 "@quangdvnnnn/go-n-share@^1.0.10":
-  version "1.0.32"
-  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.32.tgz#68c085e85285f48abba46459534f1fdd6c1dcb90"
-  integrity sha512-QY+AYx7E37MjGoaDXejLabvLANQSplCLNulOiAdQOozccoSuFjrisvJuLej4TsvNyhD0D5gADgk4ComXE0agEw==
+  version "1.0.35"
+  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.35.tgz#7f72ab88a925177b972c9b7b1213c61326d6ba67"
+  integrity sha512-r/PGVjDNA7kgYxzpHo4esKkJo0rn4i3sKanj0S3a8Mi5xNQe4E0S0o73OehfEWBRiVXeH95cyhsmD3C6CdDF6Q==
   dependencies:
     "@types/express" "^4.17.9"
     "@types/express-session" "^1.17.3"
@@ -939,9 +939,9 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "14.14.37"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.37.tgz#a3dd8da4eb84a996c36e331df98d82abd76b516e"
-  integrity sha512-XYmBiy+ohOR4Lh5jE379fV2IU+6Jn4g5qASinhitfyO71b/sCo6MKsMLF5tc7Zf2CE8hViVQyYSobJNke8OvUw==
+  version "14.14.41"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.41.tgz#d0b939d94c1d7bd53d04824af45f1139b8c45615"
+  integrity sha512-dueRKfaJL4RTtSa7bWeTK1M+VH+Gns73oCgzvYfHZywRCoPSd8EkXBL0mZ9unPTveBn+D9phZBaxuzpwjWkW0g==
 
 "@types/node@^14.14.6":
   version "14.14.35"
@@ -2007,6 +2007,8 @@ color-convert@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-2.0.1.tgz#72d3a68d598c9bdb3af2ad1e84f21d896abd4de3"
   integrity sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==
+  dependencies:
+    color-name "~1.1.4"
 
 color-name@1.1.3:
   version "1.1.3"

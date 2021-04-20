@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CoachFetchingMess, RouteFetchingMess } from '@quangdvnnnn/go-n-share';
+import {
+  CoachFetchingMess,
+  RouteFetchingMess,
+  SeatCoachFetchingMess,
+} from '@quangdvnnnn/go-n-share';
 import dayjs from 'dayjs';
 import { getManager } from 'typeorm';
 import { Route } from '../common/route.entity';
@@ -11,6 +15,21 @@ import { GetAvailableCoachesDto } from './dto/get-avai-coaches.dto';
 @Injectable()
 export class CoachService {
   constructor() {}
+
+  async getSeatCoachDetail({ coachId }: SeatCoachFetchingMess) {
+    const res = await Coach.findOne({
+      join: {
+        alias: 'coach',
+        leftJoinAndSelect: {
+          coachType: 'coach.type',
+        },
+      },
+      where: {
+        id: coachId,
+      },
+    });
+    return res.type.seatNumber;
+  }
 
   async getCoaches(data: RouteFetchingMess) {
     const returnRoutes: RouteInformation[] = await getManager().query(
