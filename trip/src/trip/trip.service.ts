@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { TripStatusUpdatedEvent } from '@quangdvnnnn/go-n-share';
+import {
+  BookingCreatedEvent,
+  TripFetchingMess,
+  TripStatus,
+  TripStatusUpdatedEvent,
+} from '@quangdvnnnn/go-n-share';
 import { getConnection } from 'typeorm';
 import {
   CoachFetchingResponse,
@@ -13,6 +18,61 @@ import { Trip } from './trip.entity';
 @Injectable()
 export class TripService {
   constructor() {}
+
+  async getTripCoach(tripId: number) {
+    const res = await Trip.findOne({
+      select: ['coachId'],
+      where: {
+        id: tripId,
+      },
+    });
+    return res.coachId;
+  }
+
+  async updateTripBooking(data: BookingCreatedEvent, maxSeat: number) {
+    await getConnection()
+      .createQueryBuilder()
+      .update(Trip)
+      .set({ bookedSeat: () => 'bookedSeat + 1' })
+      .where('id = :id', { id: data.tripId })
+      .execute();
+
+    const res = await Trip.findOne({
+      where: {
+        id: data.tripId,
+      },
+      select: ['bookedSeat'],
+    });
+    console.log(res.bookedSeat);
+    if (res.bookedSeat === maxSeat) {
+      await getConnection()
+        .createQueryBuilder()
+        .update(Trip)
+        .set({ tripStatus: TripStatus.FULL })
+        .where('id = :id', { id: data.tripId })
+        .execute();
+    }
+    return true;
+  }
+
+  async tripFetching(data: TripFetchingMess) {
+    const curTrip = await getConnection()
+      .createQueryBuilder(Trip, 'trip')
+      .where('trip.id = :id', { id: data.tripId })
+      .andWhere(`trip.tripStatus = :status`, { status: TripStatus.READY })
+      .orderBy('trip.id')
+      .select([
+        'trip.id',
+        'trip.departureDate',
+        'trip.departureTime',
+        'trip.departureLocation',
+        'trip.arriveDate',
+        'trip.arriveTime',
+        'trip.arriveLocation',
+      ])
+      .getOne();
+    return curTrip;
+  }
 
   async updateTripStatus(data: TripStatusUpdatedEvent) {
     const returnData = await getConnection()

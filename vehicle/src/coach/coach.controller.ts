@@ -12,6 +12,7 @@ import {
   CoachFetchingMess,
   Messages,
   RouteFetchingMess,
+  SeatCoachFetchingMess,
   StaffRoles,
 } from '@quangdvnnnn/go-n-share';
 import { RequireAuthStaffGuard } from '../guards/require-auth-staff.guard';
@@ -30,6 +31,10 @@ const RouteFetching =
     ? Messages.RouteFetching
     : Messages.RouteFetchingDev;
 
+const SeatCoachFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.SeatCoachFetching
+    : Messages.SeatCoachFetchingDev;
 @Controller('coach')
 export class CoachController {
   constructor(private readonly coachService: CoachService) {}
@@ -37,6 +42,22 @@ export class CoachController {
   @MessagePattern(CoachFetching)
   async getCoachDetail(@Payload() data: CoachFetchingMess) {
     return this.coachService.getCoachDetail(data);
+  }
+
+  @MessagePattern(SeatCoachFetching)
+  async getSeatCoachDetail(@Payload() data: SeatCoachFetchingMess) {
+    const returnData = await this.coachService.getSeatCoachDetail(data);
+    if (!returnData) {
+      return {
+        success: false,
+        data: null,
+      };
+    } else {
+      return {
+        success: true,
+        data: returnData,
+      };
+    }
   }
 
   @MessagePattern(RouteFetching)

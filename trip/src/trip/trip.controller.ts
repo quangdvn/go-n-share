@@ -9,15 +9,23 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 import {
+  ClientProxy,
+  EventPattern,
+  MessagePattern,
+  Payload,
+} from '@nestjs/microservices';
+import {
+  BookingCreatedEvent,
   CoachFetchingMess,
   DriverFetchingMess,
   Events,
   Messages,
   RouteFetchingMess,
+  SeatCoachFetchingMess,
   StaffRoles,
   TripCreatedEvent,
+  TripFetchingMess,
   TripStatusUpdatedEvent,
 } from '@quangdvnnnn/go-n-share';
 import { TRIP_SERVICE } from '../constants';
@@ -57,6 +65,21 @@ const RouteFetching =
     ? Messages.RouteFetching
     : Messages.RouteFetchingDev;
 
+const TripFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.TripFetching
+    : Messages.TripFetchingDev;
+
+const SeatCoachFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.SeatCoachFetching
+    : Messages.SeatCoachFetchingDev;
+
+const BookingCreated =
+  process.env.NODE_ENV === 'production'
+    ? Events.BookingCreated
+    : Events.BookingCreatedDev;
+
 const subLogger = new Logger('EventSubcribe');
 const pubLogger = new Logger('EventPublish');
 
@@ -67,9 +90,54 @@ export class TripController {
     @Inject(TRIP_SERVICE) private readonly client: ClientProxy,
   ) {}
 
+  @MessagePattern(TripFetching)
+  async tripFetching(@Payload() data: TripFetchingMess) {
+    const res = await this.tripService.tripFetching(data);
+    if (res) {
+      return {
+        success: true,
+        data: res,
+      };
+    } else {
+      return {
+        success: false,
+        data: null,
+      };
+    }
+  }
+
+  @EventPattern(BookingCreated)
+  async updateTripBooking(@Payload() data: BookingCreatedEvent) {
+    subLogger.log('Event received successfully...');
+
+    const coach = await this.tripService.getTripCoach(data.tripId);
+    const coachMess: SeatCoachFetchingMess = {
+      coachId: coach,
+    };
+
+    const coachData = await this.client
+      .send<{ success: false; data: number | null }, SeatCoachFetchingMess>(
+        SeatCoachFetching,
+        coachMess,
+      )
+      .toPromise();
+
+    if (!coachData.success) {
+      throw new BadRequestException('Loại xe không tồn tại');
+    }
+
+    return this.tripService.updateTripBooking(data, coachData.data);
+  }
+
+  // @Post('test')
+  // async test() {
+  //   return this.tripService.updateTripBooking();
+  // }
+
   @EventPattern(TripStatusUpdated)
   async updateTripStatus(@Payload() data: TripStatusUpdatedEvent) {
     subLogger.log('Event received successfully...');
+
     return this.tripService.updateTripStatus(data);
   }
 

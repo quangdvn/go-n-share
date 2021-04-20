@@ -2,13 +2,22 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   DriverCreatedEvent,
+  DriverRoles,
+  TransitCreatedEvent,
+  TransitDriverFetchingMess,
   TripCreatedEvent,
   WorkingStatus,
 } from '@quangdvnnnn/go-n-share';
 import dayjs from 'dayjs';
 import { Model } from 'mongoose';
 import { isDayBetween } from '../utils/isDayBetween';
-import { Driver, DriverDocument, TripInterface } from './driver.entity';
+import {
+  Driver,
+  DriverDocument,
+  TransitInterface,
+  TripInterface,
+} from './driver.entity';
+import { ConfirmTransitDto } from './dto/confirm-transit.dto';
 import { ConfirmTripDto } from './dto/confirm-trip.dto';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { GetAvailableDriversDto } from './dto/get-avai-drivers.dto';
@@ -22,6 +31,32 @@ export class DriverService {
     @InjectModel(Location.name)
     private readonly locationModel: Model<LocationDocument>,
   ) {}
+
+  async getTransitDrivers(data: TransitDriverFetchingMess) {
+    const curLocation = await this.locationModel.findOne({
+      subname: data.location,
+    });
+    const drivers = await this.driverModel.find({
+      role: DriverRoles.TRANSIT_TRIP,
+      location: curLocation._id,
+      hasAssignedTrip: false,
+      isVerify: true,
+      workingStatus: WorkingStatus.WORKING,
+    });
+
+    const res = drivers.filter((driver) => {
+      const hasTrip = driver.transits.findIndex(
+        (transit) =>
+          transit.departureDate === data.date &&
+          transit.departureShift === data.shift,
+      );
+      if (hasTrip >= 0) {
+        return false;
+      }
+      return true;
+    });
+    return res.map((res) => res.id as number);
+  }
 
   async getDriverInfo(driverId: number) {
     const curDriver = await this.driverModel
@@ -40,6 +75,7 @@ export class DriverService {
     const curDriver = await this.driverModel.findOne({
       id: driverId,
       workingStatus: WorkingStatus.WORKING,
+      role: DriverRoles.FIXED_TRIP,
       hasAssignedTrip: false,
       isVerify: true,
     });
@@ -54,6 +90,7 @@ export class DriverService {
       .findOne({
         id: driverId,
         workingStatus: WorkingStatus.WORKING,
+        role: DriverRoles.FIXED_TRIP,
       })
       .populate('location');
     if (!curDriver) {
@@ -69,6 +106,32 @@ export class DriverService {
     await curDriver.save();
 
     return { driver: curDriver, trip: curTrip };
+  }
+
+  async confirmTransitStatus(
+    confirmTransitDto: ConfirmTransitDto,
+    driverId: number,
+  ) {
+    const curDriver = await this.driverModel
+      .findOne({
+        id: driverId,
+        workingStatus: WorkingStatus.WORKING,
+        role: DriverRoles.TRANSIT_TRIP,
+      })
+      .populate('location');
+    if (!curDriver) {
+      throw new BadRequestException('Đã xảy ra lỗi hệ thống');
+    }
+    const curTransit = curDriver.transits.find(
+      (transit) => transit.id === confirmTransitDto.transitId,
+    );
+    if (!curTransit) {
+      throw new BadRequestException('Chuyến đi không tồn tại');
+    }
+    curTransit.transitStatus = confirmTransitDto.status;
+    await curDriver.save();
+
+    return { driver: curDriver, transit: curTransit };
   }
 
   async addTrip({ tripData }: TripCreatedEvent) {
@@ -97,6 +160,48 @@ export class DriverService {
         $push: {
           trips: {
             $each: [firstTrip, secondTrip],
+          },
+        },
+      },
+      {
+        new: true,
+      },
+    );
+  }
+
+  async addTransit({ transitData }: TransitCreatedEvent) {
+    const firstTransit: TransitInterface = {
+      id: transitData[0].id,
+      tripId: transitData[0].tripId,
+      departureDate: transitData[0].departureDate,
+      departureShift: transitData[0].departureShift,
+    };
+
+    const secondTransit: TransitInterface = {
+      id: transitData[1].id,
+      tripId: transitData[1].tripId,
+      departureDate: transitData[1].departureDate,
+      departureShift: transitData[1].departureShift,
+    };
+    await this.driverModel.findOneAndUpdate(
+      { id: transitData[0].driverId },
+      {
+        $push: {
+          transits: {
+            $each: [firstTransit],
+          },
+        },
+      },
+      {
+        new: true,
+      },
+    );
+    await this.driverModel.findOneAndUpdate(
+      { id: transitData[1].driverId },
+      {
+        $push: {
+          transits: {
+            $each: [secondTransit],
           },
         },
       },

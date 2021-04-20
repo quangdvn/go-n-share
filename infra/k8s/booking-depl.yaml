@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booking
+  template:
+    metadata:
+      labels:
+        app: booking
+    spec:
+      containers:
+        - name: booking
+          image: quangdvn/gns-booking
+          imagePullPolicy: Always
+          env:
+            - name: APP_PORT
+              value: "3000"
+            - name: SESSION_NAME
+              value: qid
+            - name: SESSION_SECRET
+              value: quangdvn
+            - name: JWT_SECRET
+              value: quangdvn
+            - name: REDIS_HOST
+              value: redis-17417.c93.us-east-1-3.ec2.cloud.redislabs.com
+            - name: REDIS_PORT
+              value: "17417"
+            - name: REDIS_PASSWORD
+              value: "123456"
+            - name: DB_HOST
+              value: booking-database.c3q1knxswi0u.ap-southeast-1.rds.amazonaws.com
+            - name: DB_PORT
+              value: "3307"
+            - name: DB_USERNAME
+              value: root
+            - name: DB_PASSWORD
+              value: 1s7v2p6x
+            - name: DB_NAME
+              value: booking
+            - name: NATS_URL
+              value: nats://nats-serv:4222
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-serv
+spec:
+  selector:
+    app: booking
+  ports:
+    - name: booking
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

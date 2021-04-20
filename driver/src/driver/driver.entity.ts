@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
   DayOfWeek,
   DriverRoles,
+  TripShift,
   TripStatus,
   WorkingStatus,
 } from '@quangdvnnnn/go-n-share';
@@ -22,6 +23,14 @@ export type TripInterface = {
   tripStatus?: TripStatus;
 };
 
+export type TransitInterface = {
+  id: number;
+  tripId: number;
+  departureDate: string;
+  departureShift: TripShift;
+  transitStatus?: TripStatus;
+};
+
 const tripSchema = new mongoose.Schema({
   id: Number,
   departureDate: String,
@@ -31,6 +40,17 @@ const tripSchema = new mongoose.Schema({
   arrriveTime: Number,
   arriveLocation: String,
   tripStatus: {
+    type: TripStatus,
+    default: TripStatus.UNCONFIRM,
+  },
+});
+
+const transitSchema = new mongoose.Schema({
+  id: Number,
+  tripId: Number,
+  departureDate: String,
+  departureShift: Number,
+  transitStatus: {
     type: TripStatus,
     default: TripStatus.UNCONFIRM,
   },
@@ -84,6 +104,9 @@ export class Driver {
 
   @Prop({ type: [tripSchema], required: false, default: [] })
   trips: TripInterface[];
+
+  @Prop({ type: [transitSchema], required: false, default: [] })
+  transits: TransitInterface[];
 }
 
 export const DriverSchema = SchemaFactory.createForClass(Driver);
