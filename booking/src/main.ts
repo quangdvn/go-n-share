@@ -110,10 +110,10 @@ async function bootstrap() {
 
     app.listen(process.env.APP_PORT, () => {
       logger.log(
-        `Booking Service is listening on port ${process.env.APP_PORT} ....`,
+        `Booking Service is listening on port ${process.env.APP_PORT} ...`,
       );
       if (__prod__) {
-        logger.log('Booking Service is running on production ....');
+        logger.log('Booking Service is running on production ...');
       }
     });
   });

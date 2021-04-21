@@ -97,11 +97,9 @@ async function bootstrap() {
   );
 
   await app.listen(process.env.APP_PORT, () => {
-    logger.log(
-      `Auth Service is listening on port ${process.env.APP_PORT} ....`,
-    );
+    logger.log(`Auth Service is listening on port ${process.env.APP_PORT} ...`);
     if (__prod__) {
-      logger.log('Auth Service is running on production ....');
+      logger.log('Auth Service is running on production ...');
     }
   });
 }

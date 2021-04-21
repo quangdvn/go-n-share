@@ -113,10 +113,10 @@ async function bootstrap() {
     logger.log('Trip Microservice is running ...');
     app.listen(process.env.APP_PORT, () => {
       logger.log(
-        `Trip Service is listening on port ${process.env.APP_PORT}  ....`,
+        `Trip Service is listening on port ${process.env.APP_PORT}  ...`,
       );
       if (__prod__) {
-        logger.log('Trip Service is running on production ....');
+        logger.log('Trip Service is running on production ...');
       }
     });
   });

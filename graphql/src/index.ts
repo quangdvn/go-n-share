@@ -142,9 +142,9 @@ const main = async () => {
   });
 
   app.listen(parseInt(process.env.APP_PORT), () => {
-    console.log(`Server is listening on port ${process.env.APP_PORT} ....`);
+    console.log(`Server is listening on port ${process.env.APP_PORT} ...`);
     if (__prod__) {
-      console.log('GraphQL Service is running in production ....');
+      console.log('GraphQL Service is running in production ...');
     }
   });
 };

@@ -114,10 +114,10 @@ async function bootstrap() {
     logger.log('Driver Microservice is running ...');
     app.listen(process.env.APP_PORT, () => {
       logger.log(
-        `Driver Service is listening on port ${process.env.APP_PORT} ....`,
+        `Driver Service is listening on port ${process.env.APP_PORT} ...`,
       );
       if (__prod__) {
-        logger.log('Driver Service is running on production ....');
+        logger.log('Driver Service is running on production ...');
       }
     });
   });

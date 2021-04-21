@@ -111,10 +111,10 @@ async function bootstrap() {
 
     app.listen(process.env.APP_PORT, () => {
       logger.log(
-        `Vehicle Service is listening on port ${process.env.APP_PORT} ....`,
+        `Vehicle Service is listening on port ${process.env.APP_PORT} ...`,
       );
       if (__prod__) {
-        logger.log('Vehicle Service is running on production ....');
+        logger.log('Vehicle Service is running on production ...');
       }
     });
   });
