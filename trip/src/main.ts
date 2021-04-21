@@ -101,9 +101,9 @@ async function bootstrap() {
       cookie: {
         signed: false,
         httpOnly: true,
-        secure: __prod__, //* Over HTTPS
+        secure: false, //* Over HTTPS
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //* 10 years,
-        sameSite: 'lax', //* csrf,
+        sameSite: false, //* csrf,
       },
     }),
   );
