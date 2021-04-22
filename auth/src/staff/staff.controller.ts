@@ -97,7 +97,10 @@ export class StaffController {
         console.log(err);
         return response.status(400).send({ success: false });
       }
-      response.clearCookie('qid');
+      response.clearCookie('qid', {
+        path: '/',
+        domain: 'quangdvn.me',
+      });
       return response.status(200).send({ success: true });
     });
   }

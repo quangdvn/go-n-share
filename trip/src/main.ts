@@ -73,8 +73,9 @@ async function bootstrap() {
 
   app.set('trust proxy', true);
   app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    origin: '*',
   });
 
   const logger = new Logger('Bootstrap');
@@ -101,9 +102,10 @@ async function bootstrap() {
       cookie: {
         signed: false,
         httpOnly: true,
-        secure: false, //* Over HTTPS
+        domain: 'quangdvn.me',
+        secure: __prod__, //* Over HTTPS
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //* 10 years,
-        sameSite: false, //* csrf,
+        sameSite: 'none', //* csrf,
       },
     }),
   );

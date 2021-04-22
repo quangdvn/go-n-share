@@ -71,8 +71,9 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('trust proxy', true);
   app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    origin: '*',
   });
   const logger = new Logger('Bootstrap');
   const RedisStore = connectRedis(session);
@@ -96,10 +97,11 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         signed: false,
+        domain: 'quangdvn.me',
         httpOnly: true,
-        secure: false, //* Over HTTPS
+        secure: __prod__, //* Over HTTPS
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //* 10 years,
-        sameSite: false, //* csrf,
+        sameSite: 'none', //* csrf,
       },
     }),
   );

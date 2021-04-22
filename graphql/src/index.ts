@@ -72,8 +72,9 @@ const main = async () => {
   app.set('trust proxy', 1);
   app.use(
     cors({
-      origin: '*',
+      origin: true,
       credentials: true,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     })
   );
 
@@ -97,9 +98,10 @@ const main = async () => {
       cookie: {
         signed: false,
         httpOnly: true,
-        secure: false, //* Over HTTPS
+        domain: 'quangdvn.me',
+        secure: __prod__, //* Over HTTPS
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //* 10 years,
-        sameSite: false, //* csrf,
+        sameSite: 'none', //* csrf,
       },
     })
   );
