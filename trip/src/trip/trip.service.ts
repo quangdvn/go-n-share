@@ -43,7 +43,6 @@ export class TripService {
       },
       select: ['bookedSeat'],
     });
-    console.log(res.bookedSeat);
     if (res.bookedSeat === maxSeat) {
       await getConnection()
         .createQueryBuilder()

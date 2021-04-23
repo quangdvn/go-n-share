@@ -236,22 +236,27 @@ export class DriverService {
       if (driver.trips.length === 0) {
         return true;
       } else {
-        const isValidOne = !driver.trips.some((trip) =>
-          isDayBetween(departureDate, trip.departureDate, trip.arriveDate),
-        );
-        const isValidTwo = !driver.trips.some((trip) =>
-          isDayBetween(
-            dayjs(departureDate)
-              .add(shift + drivingDuration, 'hours')
-              .startOf('day'),
+        const isValidOne = !driver.trips.some((trip) => {
+          return isDayBetween(
+            departureDate,
             trip.departureDate,
             trip.arriveDate,
+          );
+        });
+        const isValidTwo = !driver.trips.some((trip) =>
+          isDayBetween(
+            dayjs(departureDate).add(shift + drivingDuration, 'hours'),
+            dayjs(trip.departureDate).add(trip.departureTime, 'hours'),
+            dayjs(trip.arriveDate).add(trip.arrriveTime, 'hours'),
           ),
         );
-        return isValidOne && isValidTwo;
+        console.log('1', driver.id);
+        console.log('2', isValidOne);
+        console.log('3', isValidTwo);
+        return isValidOne || isValidTwo;
       }
     });
-    return returnDrivers;
+    return returnDrivers.map((driver) => driver.id);
   }
 
   async createDriver(createDriverInput: DriverCreatedEvent) {

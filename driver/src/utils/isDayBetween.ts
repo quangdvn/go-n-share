@@ -5,8 +5,8 @@ dayjs.extend(isBetween);
 
 export function isDayBetween(
   curDate: string | dayjs.Dayjs,
-  startDate: string,
-  endDate: string,
+  startDate: string | dayjs.Dayjs,
+  endDate: string | dayjs.Dayjs,
 ) {
   const boolean = dayjs(curDate, 'YYYY/MM/DD').isBetween(
     startDate,
