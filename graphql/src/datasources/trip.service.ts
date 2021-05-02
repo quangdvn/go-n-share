@@ -1,12 +1,7 @@
+import { Location as LocationEnum } from '@quangdvnnnn/go-n-share';
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
-import {
-  DriverInfoResponse,
-  DriverInfoData,
-  GetAvailableDriversResponse,
-  SearchTripResponse,
-} from '../payloads/response.interface';
 import * as dotenv from 'dotenv';
-import { DriverRoles, Location as LocationEnum } from '@quangdvnnnn/go-n-share';
+import { SearchTripResponse } from '../payloads/response.interface';
 
 dotenv.config();
 export class TripService extends RESTDataSource {

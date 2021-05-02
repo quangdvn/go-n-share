@@ -141,7 +141,7 @@ export class DriverService {
       departureTime: tripData[0].departureTime,
       departureLocation: tripData[0].departureLocation,
       arriveDate: tripData[0].arriveDate,
-      arrriveTime: tripData[0].arriveTime,
+      arriveTime: tripData[0].arriveTime,
       arriveLocation: tripData[0].arriveLocation,
     };
 
@@ -151,7 +151,7 @@ export class DriverService {
       departureTime: tripData[1].departureTime,
       departureLocation: tripData[1].departureLocation,
       arriveDate: tripData[1].arriveDate,
-      arrriveTime: tripData[1].arriveTime,
+      arriveTime: tripData[1].arriveTime,
       arriveLocation: tripData[1].arriveLocation,
     };
     await this.driverModel.findOneAndUpdate(
@@ -247,7 +247,7 @@ export class DriverService {
           isDayBetween(
             dayjs(departureDate).add(shift + drivingDuration, 'hours'),
             dayjs(trip.departureDate).add(trip.departureTime, 'hours'),
-            dayjs(trip.arriveDate).add(trip.arrriveTime, 'hours'),
+            dayjs(trip.arriveDate).add(trip.arriveTime, 'hours'),
           ),
         );
         console.log('1', driver.id);

@@ -25,23 +25,41 @@ class LocationInfo {
 
 @ObjectType()
 export class TripInfo {
-  @Field()
+  @Field({ nullable: true })
   tripStatus: string;
 
-  @Field()
+  @Field({ nullable: true })
   id: number;
 
-  @Field()
+  @Field({ nullable: true })
   departureDate: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   departureTime: number;
 
-  @Field()
+  @Field({ nullable: true })
   arriveDate: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   arriveTime: number;
+}
+
+@ObjectType()
+class TransitInfo {
+  @Field(() => Int, { nullable: true })
+  id: number;
+
+  @Field(() => Int, { nullable: true })
+  tripId: number;
+
+  @Field(() => Int, { nullable: true })
+  departureShift: number;
+
+  @Field(() => String, { nullable: true })
+  departureDate: string;
+
+  @Field(() => String, { nullable: true })
+  transitStatus: string;
 }
 
 @ObjectType()
@@ -72,6 +90,9 @@ class DriverInfo {
 
   @Field(() => [TripInfo], { nullable: true })
   trips: TripInfo[];
+
+  @Field(() => [TransitInfo], { nullable: true })
+  transits: TransitInfo[];
 
   @Field(() => String)
   phone: string;

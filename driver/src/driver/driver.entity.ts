@@ -17,7 +17,7 @@ export type TripInterface = {
   departureDate: string;
   departureTime: number;
   arriveDate: string;
-  arrriveTime: number;
+  arriveTime: number;
   departureLocation: LocationEnum;
   arriveLocation: LocationEnum;
   tripStatus?: TripStatus;
@@ -37,7 +37,7 @@ const tripSchema = new mongoose.Schema({
   departureTime: Number,
   departureLocation: String,
   arriveDate: String,
-  arrriveTime: Number,
+  arriveTime: Number,
   arriveLocation: String,
   tripStatus: {
     type: TripStatus,

@@ -21,6 +21,7 @@ export interface DriverInfoData {
   fullname: string;
   location: LocationData;
   trips: TripData[];
+  transits: TransitData[];
   phone: string;
   role: string;
   username: string;
@@ -55,6 +56,14 @@ export interface TripData {
   departureTime: number;
   arriveDate: string;
   arriveTime: number;
+}
+
+export interface TransitData {
+  id: number;
+  tripId: number;
+  departureDate: string;
+  departureShift: number;
+  transitStatus: string;
 }
 
 export interface LocationData {

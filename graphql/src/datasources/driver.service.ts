@@ -31,7 +31,7 @@ export class DriverService extends RESTDataSource {
   }
 
   async getInfo(): Promise<DriverInfoData | null> {
-    const res = await this.get<DriverInfoResponse>('schedule/me');
+    const res = await this.get<DriverInfoResponse>('driver/me');
     return res.success ? res.data : null;
   }
 
@@ -44,7 +44,7 @@ export class DriverService extends RESTDataSource {
   ) {
     try {
       const res = await this.post<GetAvailableDriversResponse>(
-        `schedule/available`,
+        `driver/available-schedule`,
         {
           location,
           role,
