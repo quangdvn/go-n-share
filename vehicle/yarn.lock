@@ -685,9 +685,9 @@
     node-fetch "^2.6.1"
 
 "@quangdvnnnn/go-n-share@^1.0.21":
-  version "1.0.45"
-  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.45.tgz#5798e196197152c10cc93d6c4d01b0c66899e482"
-  integrity sha512-K6OZqNODO8G6/9ena0k6M8C5j1agzxFq/DD4mF284+Uo8aLAr8573DQxojGkdcY9cn51z5iuvYEkcrnFfahZVw==
+  version "1.0.51"
+  resolved "https://registry.yarnpkg.com/@quangdvnnnn/go-n-share/-/go-n-share-1.0.51.tgz#8c99a0975601dd16efcd79af82ff1df156ec815b"
+  integrity sha512-we2IscqcPQJ7+E7li+lNUrJAZl3EcQYa1d1Cq/u4nU4bieEVOOJ4QYu4EajsEHK5ElgMNARIAHp6ab+ohXM/mw==
   dependencies:
     "@types/express" "^4.17.9"
     "@types/express-session" "^1.17.3"
@@ -907,9 +907,9 @@
   integrity sha512-YATxVxgRqNH6nHEIsvg6k2Boc1JHI9ZbH5iWFFv/MTkchz3b1ieGDa5T0a9RznNdI0KhVbdbWSN+KWWrQZRxTw==
 
 "@types/node@*":
-  version "14.14.41"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.41.tgz#d0b939d94c1d7bd53d04824af45f1139b8c45615"
-  integrity sha512-dueRKfaJL4RTtSa7bWeTK1M+VH+Gns73oCgzvYfHZywRCoPSd8EkXBL0mZ9unPTveBn+D9phZBaxuzpwjWkW0g==
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.0.1.tgz#ef34dea0881028d11398be5bf4e856743e3dc35a"
+  integrity sha512-TMkXt0Ck1y0KKsGr9gJtWGjttxlZnnvDtphxUOSd0bfaR6Q1jle+sPvrzNR1urqYTWMinoKvjKfXUGsumaO1PA==
 
 "@types/node@^14.14.6":
   version "14.14.37"

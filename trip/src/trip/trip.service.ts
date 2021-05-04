@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-  BookingCreatedEvent,
+  AllTripFetchingMess,
+  BookingVerifiedEvent,
   TripFetchingMess,
   TripStatus,
   TripStatusUpdatedEvent,
@@ -10,6 +11,7 @@ import {
   CoachFetchingResponse,
   RouteData,
 } from '../constants/custom-interface';
+import { TransitDetail } from '../transit/transit-detail.entity';
 import { getTripInfo } from '../utils/getTripInfo';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { SearchTripDto } from './dto/search-trip.dto';
@@ -29,13 +31,35 @@ export class TripService {
     return res.coachId;
   }
 
-  async updateTripBooking(data: BookingCreatedEvent, maxSeat: number) {
+  async getTrip(id: number) {
+    const res = await Trip.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!res) {
+      throw new BadRequestException('Chuyến đi không tồn tại');
+    }
+
+    return res;
+  }
+
+  async updateTripBooking(data: BookingVerifiedEvent, maxSeat: number) {
     await getConnection()
       .createQueryBuilder()
       .update(Trip)
       .set({ bookedSeat: () => 'bookedSeat + 1' })
       .where('id = :id', { id: data.tripId })
       .execute();
+
+    if (data.hasTransit) {
+      await getConnection()
+        .createQueryBuilder()
+        .update(TransitDetail)
+        .set({ isVerify: data.isVerify, isCancel: data.isCancel })
+        .where('id = :id', { id: data.transitDetailId })
+        .execute();
+    }
 
     const res = await Trip.findOne({
       where: {
@@ -70,6 +94,25 @@ export class TripService {
         'trip.arriveLocation',
       ])
       .getOne();
+    return curTrip;
+  }
+
+  async allTripFetching(data: AllTripFetchingMess) {
+    const curTrip = await getConnection()
+      .createQueryBuilder(Trip, 'trip')
+      .where('trip.id IN (:...ids)', { ids: data.tripIds })
+      .andWhere(`trip.tripStatus = :status`, { status: TripStatus.READY })
+      .orderBy('trip.id')
+      .select([
+        'trip.id',
+        'trip.departureDate',
+        'trip.departureTime',
+        'trip.departureLocation',
+        'trip.arriveDate',
+        'trip.arriveTime',
+        'trip.arriveLocation',
+      ])
+      .getMany();
     return curTrip;
   }
 

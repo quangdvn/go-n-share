@@ -152,3 +152,124 @@ export interface CoachTripData {
   tripStatus: string;
   coachId: number;
 }
+
+export interface GetAllBookingResponse {
+  success: boolean;
+  data: GetAllBookingData[];
+}
+
+export interface GetAllBookingData {
+  id: number;
+  bookingName: string;
+  bookingMail: string;
+  bookingPhone: string;
+  totalPrice: number;
+  isVerify: boolean;
+  isCancel: boolean;
+  hasTransit: boolean;
+  transitDetailId: number | null;
+  notes: string;
+  tripId: number;
+  bookingStatus: string;
+  paymentMethod: string;
+  createdAt: Date;
+  updatedAt: Date;
+  transitDetail: BookingTransitDetail | null;
+  tripDetail: BookingTripDetail;
+}
+
+export interface BookingTransitDetail {
+  id: number;
+  bookingName: string;
+  bookingPhone: string;
+  bookingStatus: string;
+  notes: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  transitId: number;
+  isVerify: boolean;
+  isCancel: boolean;
+  transitStatus: string;
+}
+
+export interface BookingTripDetail {
+  id: number;
+  departureDate: string;
+  departureTime: number;
+  departureLocation: string;
+  arriveDate: string;
+  arriveTime: number;
+  arriveLocation: string;
+}
+
+export interface OneTransitResponse {
+  success: boolean;
+  data: OneTransitData;
+}
+
+export interface OneTransitData {
+  id: number;
+  departureDate: string;
+  departureShift: number;
+  transitStatus: string;
+  cabId: number;
+  driverId: number;
+  tripId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  details: OneTransitDetails[];
+  numberPlate: string;
+  seatNumber: number;
+  cabName: string;
+}
+
+export interface OneTransitDetails {
+  id: number;
+  bookingName: string;
+  bookingPhone: string;
+  bookingStatus: string;
+  notes: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  transitId: number;
+  isVerify: boolean;
+  isCancel: boolean;
+  transitStatus: string;
+}
+
+export interface OneTripResponse {
+  success: boolean;
+  data: OneTripData;
+}
+
+export interface OneTripData {
+  id: number;
+  departureDate: string;
+  departureTime: number;
+  departureLocation: string;
+  arriveDate: string;
+  arriveTime: number;
+  arriveLocation: string;
+  tripStatus: string;
+  coachId: number;
+  driverId: number;
+  bookedSeat: number;
+  createdAt: Date;
+  updatedAt: Date;
+  bookings: OneTripBooking[];
+  numberPlate: string;
+  seatNumber: number;
+  coachName: string;
+}
+
+export interface OneTripBooking {
+  id: number;
+  bookingName: string;
+  bookingMail: string;
+  bookingPhone: string;
+  totalPrice: number;
+  notes: string;
+  paymentMethod: string;
+}

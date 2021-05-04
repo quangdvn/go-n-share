@@ -1,8 +1,11 @@
 import {
   BadRequestException,
   Controller,
+  Get,
   Inject,
   Logger,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ClientProxy,
@@ -11,6 +14,7 @@ import {
   Payload,
 } from '@nestjs/microservices';
 import {
+  CabFetchingMess,
   Events,
   Messages,
   TransitCabFetchingMess,
@@ -52,6 +56,16 @@ const TransitDetailCreating =
   process.env.NODE_ENV === 'production'
     ? Messages.TransitDetailCreating
     : Messages.TransitDetailCreatingDev;
+
+const TransitDetailFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.TransitDetailFetching
+    : Messages.TransitDetailFetchingDev;
+
+const CabFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.CabFetching
+    : Messages.CabFetchingDev;
 
 const pubLogger = new Logger('EventPublish');
 const subLogger = new Logger('EventSubcribe');
@@ -170,7 +184,7 @@ export class TransitController {
   }
 
   @EventPattern(TransitStatusUpdated)
-  async updateTripStatus(@Payload() data: TransitStatusUpdatedEvent) {
+  async updateTransitStatus(@Payload() data: TransitStatusUpdatedEvent) {
     subLogger.log('Event received successfully...');
     return this.transitService.updateTransitStatus(data);
   }
@@ -189,5 +203,39 @@ export class TransitController {
         data: null,
       };
     }
+  }
+
+  @MessagePattern(TransitDetailFetching)
+  async transitDetailFetching() {
+    const res = await this.transitService.transitDetailFetching();
+    if (res) {
+      return {
+        success: true,
+        data: res,
+      };
+    } else {
+      return {
+        success: false,
+        data: null,
+      };
+    }
+  }
+
+  @Get(':id')
+  async getTransit(@Param('id', ParseIntPipe) id: number) {
+    const res = await this.transitService.getTransit(id);
+
+    const cabMess: CabFetchingMess = {
+      id: res.cabId,
+    };
+
+    const cabData = await this.client
+      .send<any, CabFetchingMess>(CabFetching, cabMess)
+      .toPromise();
+
+    return {
+      success: true,
+      data: { ...res, ...cabData },
+    };
   }
 }

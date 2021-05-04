@@ -105,6 +105,171 @@ class SearchResponse {
   data: RouteData[];
 }
 
+@ObjectType()
+class OneTransitDetails {
+  @Field(() => Int)
+  id: number;
+
+  @Field(() => String)
+  bookingName: string;
+
+  @Field(() => String)
+  bookingPhone: string;
+
+  @Field(() => String)
+  bookingStatus: string;
+
+  @Field(() => String)
+  notes: string;
+
+  @Field(() => String)
+  address: string;
+
+  @Field(() => String)
+  latitude: string;
+
+  @Field(() => String)
+  longitude: string;
+
+  @Field(() => Int)
+  transitId: number;
+
+  @Field(() => Boolean)
+  isVerify: boolean;
+
+  @Field(() => Boolean)
+  isCancel: boolean;
+
+  @Field(() => String)
+  transitStatus: string;
+}
+
+@ObjectType()
+class OneTransitResponse {
+  @Field(() => Int)
+  id: number;
+
+  @Field(() => String)
+  departureDate: string;
+
+  @Field(() => Int)
+  departureShift: number;
+
+  @Field(() => String)
+  transitStatus: string;
+
+  @Field(() => String)
+  cabId: number;
+
+  @Field(() => String)
+  driverId: number;
+
+  @Field(() => Int)
+  tripId: number;
+
+  @Field(() => [OneTransitDetails], { nullable: true })
+  details: OneTransitDetails[];
+
+  @Field(() => String)
+  numberPlate: string;
+
+  @Field(() => Int)
+  seatNumber: number;
+
+  @Field(() => String)
+  cabName: string;
+}
+
+@ObjectType()
+class GetTransitResponse {
+  @Field(() => [String], { nullable: true })
+  error?: string[];
+
+  @Field(() => OneTransitResponse, { nullable: true })
+  data: OneTransitResponse;
+}
+
+@ObjectType()
+class OneTripBooking {
+  @Field(() => Int)
+  id: number;
+
+  @Field(() => String)
+  bookingName: string;
+
+  @Field(() => String)
+  bookingMail: string;
+
+  @Field(() => String)
+  bookingPhone: string;
+
+  @Field(() => Int)
+  totalPrice: number;
+
+  @Field(() => String)
+  notes: string;
+
+  @Field(() => String)
+  paymentMethod: string;
+}
+
+@ObjectType()
+class OneTripResponse {
+  @Field(() => Int)
+  id: number;
+
+  @Field(() => String)
+  departureDate: string;
+
+  @Field(() => Int)
+  departureTime: number;
+
+  @Field(() => String)
+  departureLocation: string;
+
+  @Field(() => String)
+  arriveDate: string;
+
+  @Field(() => Int)
+  arriveTime: number;
+
+  @Field(() => String)
+  arriveLocation: string;
+
+  @Field(() => String)
+  tripStatus: string;
+
+  @Field(() => Int)
+  coachId: number;
+
+  @Field(() => Int)
+  driverId: number;
+
+  @Field(() => Int)
+  bookedSeat: number;
+
+  @Field(() => [OneTripBooking], { nullable: true })
+  bookings: OneTripBooking[];
+
+  @Field(() => String)
+  numberPlate: string;
+
+  @Field(() => Int)
+  seatNumber: number;
+
+  @Field(() => String)
+  coachName: string;
+}
+
+@ObjectType()
+class GetTripResponse {
+  @Field(() => [String], { nullable: true })
+  error?: string[];
+
+  @Field(() => OneTripResponse, { nullable: true })
+  data: OneTripResponse;
+}
+
 @Resolver()
 export class TripResolver {
   @Query(() => String)
@@ -124,5 +289,18 @@ export class TripResolver {
       arrive,
       departureDate
     );
+  }
+
+  @Query(() => GetTransitResponse)
+  getTransitDetail(
+    @Ctx() ctx: any,
+    @Arg('transitId', () => Int) transitId: number
+  ) {
+    return ctx.dataSources.tripService.getTransitDetail(transitId);
+  }
+
+  @Query(() => GetTripResponse)
+  getTripDetail(@Ctx() ctx: any, @Arg('tripId', () => Int) tripId: number) {
+    return ctx.dataSources.tripService.getTripDetail(tripId);
   }
 }

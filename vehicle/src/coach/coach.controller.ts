@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
+  CoachDetailFetchingMess,
   CoachFetchingMess,
   Messages,
   RouteFetchingMess,
@@ -24,7 +25,7 @@ import { GetAvailableCoachesDto } from './dto/get-avai-coaches.dto';
 const CoachFetching =
   process.env.NODE_ENV === 'production'
     ? Messages.CoachFetching
-    : Messages.CabFetchingDev;
+    : Messages.CoachFetchingDev;
 
 const RouteFetching =
   process.env.NODE_ENV === 'production'
@@ -35,6 +36,11 @@ const SeatCoachFetching =
   process.env.NODE_ENV === 'production'
     ? Messages.SeatCoachFetching
     : Messages.SeatCoachFetchingDev;
+
+const CoachDetailFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.CoachDetailFetching
+    : Messages.CoachDetailFetchingDev;
 @Controller('coach')
 export class CoachController {
   constructor(private readonly coachService: CoachService) {}
@@ -74,6 +80,11 @@ export class CoachController {
         data: returnData,
       };
     }
+  }
+
+  @MessagePattern(CoachDetailFetching)
+  async getTransitCab(@Payload() data: CoachDetailFetchingMess) {
+    return this.coachService.getTripCoach(data);
   }
 
   @Get('/routes')

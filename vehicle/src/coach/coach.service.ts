@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  CoachDetailFetchingMess,
   CoachFetchingMess,
   RouteFetchingMess,
   SeatCoachFetchingMess,
@@ -15,6 +16,20 @@ import { GetAvailableCoachesDto } from './dto/get-avai-coaches.dto';
 @Injectable()
 export class CoachService {
   constructor() {}
+
+  async getTripCoach(data: CoachDetailFetchingMess) {
+    const res = await getManager().query(
+      `
+      SELECT C.id as coachId, C.numberPlate, CT.seatNumber, 
+      CT.name AS coachName 
+      FROM coaches AS C
+      JOIN coachTypes AS CT ON C.typeId = CT.id
+      WHERE C.id = ? 
+    `,
+      [data.id],
+    );
+    return res[0];
+  }
 
   async getSeatCoachDetail({ coachId }: SeatCoachFetchingMess) {
     const res = await Coach.findOne({

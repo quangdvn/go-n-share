@@ -1,7 +1,11 @@
 import { Location as LocationEnum } from '@quangdvnnnn/go-n-share';
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
 import * as dotenv from 'dotenv';
-import { SearchTripResponse } from '../payloads/response.interface';
+import {
+  OneTransitResponse,
+  OneTripResponse,
+  SearchTripResponse,
+} from '../payloads/response.interface';
 
 dotenv.config();
 export class TripService extends RESTDataSource {
@@ -31,6 +35,38 @@ export class TripService extends RESTDataSource {
         arrive,
         departureDate,
       });
+      return res.success ? { data: res.data } : null;
+    } catch (err) {
+      let returnArr = [];
+      if (typeof err.extensions.response.body.message === 'string') {
+        returnArr.push(err.extensions.response.body.message);
+        return {
+          error: returnArr,
+        };
+      }
+      return { error: err.extensions.response.body.message };
+    }
+  }
+
+  async getTripDetail(tripId: number) {
+    try {
+      const res = await this.get<OneTripResponse>(`trip/${tripId}`);
+      return res.success ? { data: res.data } : null;
+    } catch (err) {
+      let returnArr = [];
+      if (typeof err.extensions.response.body.message === 'string') {
+        returnArr.push(err.extensions.response.body.message);
+        return {
+          error: returnArr,
+        };
+      }
+      return { error: err.extensions.response.body.message };
+    }
+  }
+
+  async getTransitDetail(transitId: number) {
+    try {
+      const res = await this.get<OneTransitResponse>(`transit/${transitId}`);
       return res.success ? { data: res.data } : null;
     } catch (err) {
       let returnArr = [];

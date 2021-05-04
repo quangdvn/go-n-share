@@ -2,9 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   Inject,
   Logger,
+  Param,
+  ParseIntPipe,
   Post,
   UseGuards,
   ValidationPipe,
@@ -16,7 +19,9 @@ import {
   Payload,
 } from '@nestjs/microservices';
 import {
-  BookingCreatedEvent,
+  AllTripFetchingMess,
+  BookingVerifiedEvent,
+  CoachDetailFetchingMess,
   CoachFetchingMess,
   DriverFetchingMess,
   Events,
@@ -32,6 +37,7 @@ import { TRIP_SERVICE } from '../constants';
 import {
   CoachFetchingResponse,
   RouteFetchingResponse,
+  TripBookingFetchingMess,
 } from '../constants/custom-interface';
 import { RequireAuthStaffGuard } from '../guards/require-auth-staff.guard';
 import { Roles } from '../guards/roles.decorator';
@@ -43,7 +49,7 @@ import { TripService } from './trip.service';
 const CoachFetching =
   process.env.NODE_ENV === 'production'
     ? Messages.CoachFetching
-    : Messages.CabFetchingDev;
+    : Messages.CoachFetchingDev;
 
 const TripCreated =
   process.env.NODE_ENV === 'production'
@@ -75,10 +81,25 @@ const SeatCoachFetching =
     ? Messages.SeatCoachFetching
     : Messages.SeatCoachFetchingDev;
 
-const BookingCreated =
+const AllTripFetching =
   process.env.NODE_ENV === 'production'
-    ? Events.BookingCreated
-    : Events.BookingCreatedDev;
+    ? Messages.AllTripFetching
+    : Messages.AllTripFetchingDev;
+
+const TripBookingFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.TripBookingFetching
+    : Messages.TripBookingFetchingDev;
+
+const CoachDetailFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.CoachDetailFetching
+    : Messages.CoachDetailFetchingDev;
+
+const BookingVerified =
+  process.env.NODE_ENV === 'production'
+    ? Events.BookingVerified
+    : Events.BookingVerifiedDev;
 
 const subLogger = new Logger('EventSubcribe');
 const pubLogger = new Logger('EventPublish');
@@ -106,39 +127,79 @@ export class TripController {
     }
   }
 
-  @EventPattern(BookingCreated)
-  async updateTripBooking(@Payload() data: BookingCreatedEvent) {
-    subLogger.log('Event received successfully...');
+  @EventPattern(BookingVerified)
+  async updateTripBooking(@Payload() data: BookingVerifiedEvent) {
+    subLogger.log('12Event received successfully...');
+    console.log('1', data);
+    if (data.isCancel && !data.hasTransit) {
+      return true;
+    } else {
+      const coach = await this.tripService.getTripCoach(data.tripId);
+      const coachMess: SeatCoachFetchingMess = {
+        coachId: coach,
+      };
 
-    const coach = await this.tripService.getTripCoach(data.tripId);
-    const coachMess: SeatCoachFetchingMess = {
-      coachId: coach,
-    };
+      const coachData = await this.client
+        .send<{ success: false; data: number | null }, SeatCoachFetchingMess>(
+          SeatCoachFetching,
+          coachMess,
+        )
+        .toPromise();
 
-    const coachData = await this.client
-      .send<{ success: false; data: number | null }, SeatCoachFetchingMess>(
-        SeatCoachFetching,
-        coachMess,
-      )
-      .toPromise();
+      if (!coachData.success) {
+        throw new BadRequestException('Loại xe không tồn tại');
+      }
 
-    if (!coachData.success) {
-      throw new BadRequestException('Loại xe không tồn tại');
+      return this.tripService.updateTripBooking(data, coachData.data);
     }
-
-    return this.tripService.updateTripBooking(data, coachData.data);
   }
-
-  // @Post('test')
-  // async test() {
-  //   return this.tripService.updateTripBooking();
-  // }
 
   @EventPattern(TripStatusUpdated)
   async updateTripStatus(@Payload() data: TripStatusUpdatedEvent) {
     subLogger.log('Event received successfully...');
 
     return this.tripService.updateTripStatus(data);
+  }
+
+  @MessagePattern(AllTripFetching)
+  async allTripFetching(@Payload() data: AllTripFetchingMess) {
+    const res = await this.tripService.allTripFetching(data);
+    if (res) {
+      return {
+        success: true,
+        data: res,
+      };
+    } else {
+      return {
+        success: false,
+        data: null,
+      };
+    }
+  }
+
+  @Get(':id')
+  async getTrip(@Param('id', ParseIntPipe) id: number) {
+    const res = await this.tripService.getTrip(id);
+    const bookingMess: TripBookingFetchingMess = {
+      tripId: res.id,
+    };
+
+    const bookingData = await this.client
+      .send<any, TripBookingFetchingMess>(TripBookingFetching, bookingMess)
+      .toPromise();
+
+    const coachMess: CoachDetailFetchingMess = {
+      id: res.coachId,
+    };
+
+    const coachData = await this.client
+      .send<any, CoachDetailFetchingMess>(CoachDetailFetching, coachMess)
+      .toPromise();
+
+    return {
+      success: true,
+      data: { ...res, bookings: [...bookingData], ...coachData },
+    };
   }
 
   @Post()

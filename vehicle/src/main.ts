@@ -99,7 +99,7 @@ async function bootstrap() {
       cookie: {
         signed: false,
         httpOnly: true,
-        domain: 'quangdvn.me',
+        domain: __prod__ ? 'quangdvn.me' : '',
         secure: __prod__, //* Over HTTPS
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //* 10 years,
         sameSite: 'none', //* csrf,
