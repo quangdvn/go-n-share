@@ -1,5 +1,11 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { CurrentUserMiddleware } from '@quangdvnnnn/go-n-share';
 import { BOOKING_SERVICE } from '../constant';
 import { BookingController } from './booking.controller';
 import { BookingService } from './booking.service';
@@ -20,4 +26,11 @@ import { BookingService } from './booking.service';
   controllers: [BookingController],
   providers: [BookingService],
 })
-export class BookingModule {}
+export class BookingModule implements NestModule {
+  async configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CurrentUserMiddleware).forRoutes({
+      path: '*',
+      method: RequestMethod.ALL,
+    });
+  }
+}

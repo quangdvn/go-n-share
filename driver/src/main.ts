@@ -102,7 +102,7 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         signed: false,
-        domain: 'quangdvn.me',
+        domain: __prod__ ? 'quangdvn.me' : '',
         httpOnly: true,
         secure: __prod__, //* Over HTTPS
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //* 10 years,

@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
+  BookingVerifiedEvent,
   TransitDetailCreatingMess,
   TransitStatusUpdatedEvent,
   TripCreatedEvent,
 } from '@quangdvnnnn/go-n-share';
-import { getConnection } from 'typeorm';
+import { getConnection, getManager } from 'typeorm';
 import { getRand } from '../utils/rand';
 import { TransitDetail } from './transit-detail.entity';
 import { Transit } from './transit.entity';
@@ -69,5 +70,35 @@ export class TransitService {
     }).save();
 
     return [firstTransit, secondTransit];
+  }
+
+  async updateTransitDetail(data: BookingVerifiedEvent) {
+    const res = await getConnection()
+      .createQueryBuilder()
+      .update(TransitDetail)
+      .set({ isVerify: data.isVerify, isCancel: data.isCancel })
+      .where('id = :id', { id: data.transitDetailId })
+      .execute();
+
+    return res;
+  }
+
+  async transitDetailFetching() {
+    return TransitDetail.find();
+  }
+
+  async getTransit(transitId: number) {
+    const res = await getManager()
+      .createQueryBuilder(Transit, 'transit')
+      .leftJoinAndSelect('transit.details', 'details')
+      .where('transit.id = :id', { id: transitId })
+      .orderBy('transit.id')
+      .getOne();
+
+    if (!res) {
+      throw new BadRequestException('Không tìm thấy chuyến trung chuyển');
+    }
+
+    return res;
   }
 }

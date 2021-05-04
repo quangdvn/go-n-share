@@ -43,6 +43,12 @@ export class TransitDetail extends BaseEntity {
   @Column()
   transitId: number;
 
+  @Column({ default: false })
+  isVerify: boolean;
+
+  @Column({ default: false })
+  isCancel: boolean;
+
   @Column({
     type: 'enum',
     enum: TransitDetailEnum,

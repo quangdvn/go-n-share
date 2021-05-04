@@ -21,6 +21,8 @@ import { VehicleService } from './datasources/vehicle.service';
 import { VehicleResolver } from './resolvers/vehicle';
 import { TripResolver } from './resolvers/trip';
 import { TripService } from './datasources/trip.service';
+import { BookingService } from './datasources/booking.service';
+import { BookingResolver } from './resolvers/booking';
 dotenv.config();
 
 const main = async () => {
@@ -68,6 +70,10 @@ const main = async () => {
     throw new Error('TRIP_URL missing');
   }
 
+  if (!process.env.BOOKING_URL) {
+    throw new Error('BOOKING_URL missing');
+  }
+
   const app = express();
   app.set('trust proxy', 1);
   app.use(
@@ -98,7 +104,7 @@ const main = async () => {
       cookie: {
         signed: false,
         httpOnly: true,
-        domain: 'quangdvn.me',
+        domain: __prod__ ? 'quangdvn.me' : '',
         secure: __prod__, //* Over HTTPS
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //* 10 years,
         sameSite: 'none', //* csrf,
@@ -117,6 +123,7 @@ const main = async () => {
         AuthResolver,
         VehicleResolver,
         TripResolver,
+        BookingResolver,
       ],
       validate: false,
     }),
@@ -129,6 +136,7 @@ const main = async () => {
         authService: new AuthService(),
         vehicleService: new VehicleService(),
         tripService: new TripService(),
+        bookingService: new BookingService(),
       };
     },
     context: ({ req, res }): GraphContext => ({

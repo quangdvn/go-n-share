@@ -29,6 +29,9 @@ export class Booking extends BaseEntity {
   isVerify: boolean;
 
   @Column({ default: false })
+  isCancel: boolean;
+
+  @Column({ default: false })
   hasTransit!: boolean;
 
   @Column({ type: 'int', nullable: true, default: null })

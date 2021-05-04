@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { TransitCabFetchingMess } from '@quangdvnnnn/go-n-share';
+import {
+  CabFetchingMess,
+  TransitCabFetchingMess,
+} from '@quangdvnnnn/go-n-share';
 import { getManager } from 'typeorm';
 import { Cab } from './cab.entity';
 
@@ -35,5 +38,19 @@ export class CabService {
     const res = filterCabs.filter((id) => !filterUnavailableCabs.includes(id));
 
     return res;
+  }
+
+  async getTransitCab(data: CabFetchingMess) {
+    const res = await getManager().query(
+      `
+      SELECT C.id as cabId, C.numberPlate, CT.seatNumber, 
+      CT.name AS cabName 
+      FROM cabs AS C
+      JOIN cabTypes AS CT ON C.typeId = CT.id
+      WHERE C.id = ? 
+    `,
+      [data.id],
+    );
+    return res[0];
   }
 }

@@ -14,7 +14,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Events, StaffCreatedEvent, StaffRoles } from '@quangdvnnnn/go-n-share';
 import { Request, Response } from 'express';
-import { AUTH_SERVICE } from '../constants';
+import { AUTH_SERVICE, __prod__ } from '../constants';
 import {
   CreateStaffResponse,
   LoginResponse,
@@ -99,7 +99,7 @@ export class StaffController {
       }
       response.clearCookie('qid', {
         path: '/',
-        domain: 'quangdvn.me',
+        domain: __prod__ ? 'quangdvn.me' : '',
       });
       return response.status(200).send({ success: true });
     });

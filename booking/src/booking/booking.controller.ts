@@ -2,26 +2,41 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   Inject,
   Logger,
   Post,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
 import {
+  AllTripFetchingMess,
   BookingCreatedEvent,
   BookingStatus,
+  BookingVerifiedEvent,
   Events,
   Messages,
   PaymentMethod,
+  StaffRoles,
   TransitDetailCreatingMess,
+  TransitDetailFetchingMess,
   TripFetchingMess,
 } from '@quangdvnnnn/go-n-share';
 import { BOOKING_SERVICE } from '../constant';
-import { TripFetchingResponse } from '../constant/custom-interface';
+import {
+  AllTripFetchingResponse,
+  TransitDetailFetchingResponse,
+  TripBookingFetchingMess,
+  TripFetchingResponse,
+} from '../constant/custom-interface';
+import { RequireAuthStaffGuard } from '../guards/require-auth-staff.guard';
+import { Roles } from '../guards/roles.decorator';
+import { StaffRolesGuard } from '../guards/staff-roles.guard';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { VerifyBookingDto } from './dto/verify-booking.dto';
 
 const TripFetching =
   process.env.NODE_ENV === 'production'
@@ -38,7 +53,26 @@ const BookingCreated =
     ? Events.BookingCreated
     : Events.BookingCreatedDev;
 
-// const subLogger = new Logger('EventSubcribe');
+const BookingVerified =
+  process.env.NODE_ENV === 'production'
+    ? Events.BookingVerified
+    : Events.BookingVerifiedDev;
+
+const TransitDetailFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.TransitDetailFetching
+    : Messages.TransitDetailFetchingDev;
+
+const AllTripFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.AllTripFetching
+    : Messages.AllTripFetchingDev;
+
+const TripBookingFetching =
+  process.env.NODE_ENV === 'production'
+    ? Messages.TripBookingFetching
+    : Messages.TripBookingFetchingDev;
+
 const pubLogger = new Logger('EventPublish');
 
 @Controller('booking')
@@ -126,5 +160,85 @@ export class BookingController {
       success: true,
       data: res,
     };
+  }
+
+  @Get()
+  @HttpCode(200)
+  async getAllBooking() {
+    const tripIds = await this.bookingService.getAllBookedTrips();
+
+    const tripMessage: AllTripFetchingMess = {
+      tripIds: tripIds,
+    };
+    const tripData = await this.client
+      .send<AllTripFetchingResponse, AllTripFetchingMess>(
+        AllTripFetching,
+        tripMessage,
+      )
+      .toPromise();
+    if (!tripData.success) {
+      throw new BadRequestException('Chuyến đi không tồn tại');
+    }
+
+    const transitMessage: TransitDetailFetchingMess = {};
+
+    const transitData = await this.client
+      .send<TransitDetailFetchingResponse, TransitDetailFetchingMess>(
+        TransitDetailFetching,
+        transitMessage,
+      )
+      .toPromise();
+    if (!transitData.success) {
+      throw new BadRequestException('Chuyến đi cố định không tồn tại');
+    }
+
+    const res = await this.bookingService.getAllBooking(
+      tripData.data,
+      transitData.data,
+    );
+
+    return {
+      success: true,
+      data: res,
+    };
+  }
+
+  @Post('verify')
+  @HttpCode(200)
+  @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)
+  @Roles(StaffRoles.SCHEDULING)
+  async confirmBooking(
+    @Body(ValidationPipe) verifyBookingDto: VerifyBookingDto,
+  ) {
+    const res = await this.bookingService.confirmBooking(verifyBookingDto);
+
+    const bookingEvent: BookingVerifiedEvent = {
+      id: res.id,
+      tripId: res.tripId,
+      bookingName: res.bookingName,
+      bookingMail: res.bookingMail,
+      bookingPhone: res.bookingPhone,
+      totalPrice: res.totalPrice,
+      hasTransit: res.hasTransit,
+      transitDetailId: res.transitDetailId,
+      notes: res.notes,
+      isVerify: res.isVerify,
+      bookingStatus: res.bookingStatus,
+      paymentMethod: res.paymentMethod,
+      isCancel: res.isCancel,
+    };
+
+    this.client
+      .emit<string, BookingVerifiedEvent>(BookingVerified, bookingEvent)
+      .subscribe(() => pubLogger.log('Event published successfully...'));
+    return {
+      success: true,
+      data: res,
+    };
+  }
+
+  @MessagePattern(TripBookingFetching)
+  async getTripBooking(@Payload() data: TripBookingFetchingMess) {
+    return this.bookingService.getTripBooking(data);
   }
 }

@@ -1,5 +1,9 @@
 import { Location } from '@quangdvnnnn/go-n-share';
 
+export interface TripBookingFetchingMess {
+  tripId: number;
+}
+
 export interface RouteFetchingResponse {
   success: boolean;
   data: RouteData | null;
