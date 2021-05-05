@@ -236,7 +236,7 @@ export class TransitController {
 
     return {
       success: true,
-      data: { ...res, ...cabData },
+      data: { ...res, ...cabData.data },
     };
   }
 }
