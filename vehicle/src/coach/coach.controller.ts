@@ -87,6 +87,11 @@ export class CoachController {
     return this.coachService.getTripCoach(data);
   }
 
+  // @Post('test')
+  // async gettTransitCab(@Body('id') data: number) {
+  //   return this.coachService.gettTripCoach(data);
+  // }
+
   @Get('/routes')
   @HttpCode(200)
   @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)

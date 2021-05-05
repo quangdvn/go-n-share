@@ -28,6 +28,25 @@ export class CabController {
 
   @MessagePattern(CabFetching)
   async getTransitCab(@Payload() data: CabFetchingMess) {
-    return this.cabService.getTransitCab(data);
+    const returnData = await this.cabService.getTransitCab(data);
+    if (!returnData) {
+      return {
+        success: false,
+        data: null,
+      };
+    } else {
+      return {
+        success: true,
+        data: returnData,
+      };
+    }
   }
+
+  // @Post('test')
+  // async getTransitCab(
+  //   @Body('cabId') cabId: number,
+  //   @Body('tripId') tripId: number,
+  // ) {
+  //   return this.cabService.getTransitCab(cabId, tripId);
+  // }
 }

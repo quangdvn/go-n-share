@@ -222,6 +222,23 @@ export interface OneTransitData {
   numberPlate: string;
   seatNumber: number;
   cabName: string;
+  routeId: number;
+  drivingDuration: number;
+  basePrice: number;
+  departureTerminal: string;
+  departureAddress: string;
+  departureLatitude: string;
+  departureLongitude: string;
+  departureId: number;
+  departureName: string;
+  departureSubName: string;
+  arriveTerminal: string;
+  arriveAddress: string;
+  arriveLatitude: string;
+  arriveLongitude: string;
+  arriveId: number;
+  arriveName: string;
+  arriveSubName: string;
 }
 
 export interface OneTransitDetails {
@@ -262,6 +279,20 @@ export interface OneTripData {
   numberPlate: string;
   seatNumber: number;
   coachName: string;
+  fixedDepartureTerminal: string;
+  fixedDepartureAddress: string;
+  fixedDepartureLatitude: string;
+  fixedDepartureLongitude: string;
+  fixedDepartureId: number;
+  fixedDepartureName: string;
+  fixedDepartureSubName: string;
+  fixedArriveTerminal: string;
+  fixedArriveAddress: string;
+  fixedArriveLatitude: string;
+  fixedArriveLongitude: string;
+  fixedArriveId: number;
+  fixedArriveName: string;
+  fixedArriveSubName: string;
 }
 
 export interface OneTripBooking {

@@ -41,16 +41,74 @@ export class CabService {
   }
 
   async getTransitCab(data: CabFetchingMess) {
-    const res = await getManager().query(
+    const firstRes = await getManager().query(
       `
       SELECT C.id as cabId, C.numberPlate, CT.seatNumber, 
       CT.name AS cabName 
       FROM cabs AS C
       JOIN cabTypes AS CT ON C.typeId = CT.id
-      WHERE C.id = ? 
+      WHERE C.id = ?
     `,
-      [data.id],
+      [data.cabId],
     );
-    return res[0];
+
+    const secondRes = await getManager().query(
+      `
+      SELECT R.id as routeId, R.drivingDuration, R.basePrice, 
+      T1.name AS departureTerminal, T1.address AS departureAddress, 
+      T1.latitude AS departureLatitude, T1.longitude AS departureLongitude,
+      L1.id AS departureId, L1.name AS departureName, L1.subName AS departureSubName,
+      T2.name AS arriveTerminal, T2.address AS arriveAddress,
+      T2.latitude AS arriveLatitude, T2.longitude AS arriveLongitude, 
+      L2.id AS arriveId, L2.name AS arriveName, L2.subName AS arriveSubName
+      FROM routes AS R
+      JOIN coaches AS C ON C.routeId = R.id
+      JOIN terminals AS T1 ON R.departureId = T1.id
+      JOIN terminals AS T2 ON R.arriveId = T2.id
+      JOIN locations AS L1 ON T1.locationId = L1.id
+      JOIN locations AS L2 ON T2.locationId = L2.id
+      JOIN trips AS TR ON TR.coachId = C.id
+      WHERE TR.id = ?
+    `,
+      [data.tripId],
+    );
+
+    return { ...firstRes[0], ...secondRes[0] };
   }
+
+  // async getTransitCab(cabId: number, tripId: number) {
+  //   const firstRes = await getManager().query(
+  //     `
+  //     SELECT C.id as cabId, C.numberPlate, CT.seatNumber,
+  //     CT.name AS cabName
+  //     FROM cabs AS C
+  //     JOIN cabTypes AS CT ON C.typeId = CT.id
+  //     WHERE C.id = ?
+  //   `,
+  //     [cabId],
+  //   );
+
+  //   const secondRes = await getManager().query(
+  //     `
+  //     SELECT R.id as routeId, R.drivingDuration, R.basePrice,
+  //     T1.name AS departureTerminal, T1.address AS departureAddress,
+  //     T1.latitude AS departureLatitude, T1.longitude AS departureLongitude,
+  //     L1.id AS departureId, L1.name AS departureName, L1.subName AS departureSubName,
+  //     T2.name AS arriveTerminal, T2.address AS arriveAddress,
+  //     T2.latitude AS arriveLatitude, T2.longitude AS arriveLongitude,
+  //     L2.id AS departureId, L2.name AS departureName, L2.subName AS departureSubName
+  //     FROM routes AS R
+  //     JOIN coaches AS C ON C.routeId = R.id
+  //     JOIN terminals AS T1 ON R.departureId = T1.id
+  //     JOIN terminals AS T2 ON R.arriveId = T2.id
+  //     JOIN locations AS L1 ON T1.locationId = L1.id
+  //     JOIN locations AS L2 ON T2.locationId = L2.id
+  //     JOIN trips AS TR ON TR.coachId = C.id
+  //     WHERE TR.id = ?
+  //   `,
+  //     [tripId],
+  //   );
+
+  //   return { ...firstRes[0], ...secondRes[0] };
+  // }
 }
