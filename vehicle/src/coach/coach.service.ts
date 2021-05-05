@@ -20,16 +20,50 @@ export class CoachService {
   async getTripCoach(data: CoachDetailFetchingMess) {
     const res = await getManager().query(
       `
-      SELECT C.id as coachId, C.numberPlate, CT.seatNumber, 
-      CT.name AS coachName 
+      SELECT C.id as coachId, C.numberPlate, CT.seatNumber, CT.name AS coachName,
+      T1.name AS fixedDepartureTerminal, T1.address AS fixedDepartureAddress, 
+      T1.latitude AS fixedDepartureLatitude, T1.longitude AS fixedDepartureLongitude,
+      L1.id AS fixedDepartureId, L1.name AS fixedDepartureName, L1.subName AS fixedDepartureSubName,
+      T2.name AS fixedArriveTerminal, T2.address AS fixedArriveAddress,
+      T2.latitude AS fixedArriveLatitude, T2.longitude AS fixedArriveLongitude, 
+      L2.id AS fixedArriveId, L2.name AS fixedArriveName, L2.subName AS fixedArriveSubName
       FROM coaches AS C
       JOIN coachTypes AS CT ON C.typeId = CT.id
+      JOIN routes AS R ON R.id = C.routeId
+      JOIN terminals AS T1 ON R.departureId = T1.id
+      JOIN terminals AS T2 ON R.arriveId = T2.id
+      JOIN locations AS L1 ON T1.locationId = L1.id
+      JOIN locations AS L2 ON T2.locationId = L2.id
       WHERE C.id = ? 
     `,
       [data.id],
     );
     return res[0];
   }
+
+  // async gettTripCoach(data: number) {
+  //   const res = await getManager().query(
+  //     `
+  //     SELECT C.id as coachId, C.numberPlate, CT.seatNumber, CT.name AS coachName,
+  //     T1.name AS departureTerminal, T1.address AS departureAddress,
+  //     T1.latitude AS departureLatitude, T1.longitude AS departureLongitude,
+  //     L1.id AS departureId, L1.name AS departureName, L1.subName AS departureSubName,
+  //     T2.name AS arriveTerminal, T2.address AS arriveAddress,
+  //     T2.latitude AS arriveLatitude, T2.longitude AS arriveLongitude,
+  //     L2.id AS arriveId, L2.name AS arriveName, L2.subName AS arriveSubName
+  //     FROM coaches AS C
+  //     JOIN coachTypes AS CT ON C.typeId = CT.id
+  //     JOIN routes AS R ON R.id = C.routeId
+  //     JOIN terminals AS T1 ON R.departureId = T1.id
+  //     JOIN terminals AS T2 ON R.arriveId = T2.id
+  //     JOIN locations AS L1 ON T1.locationId = L1.id
+  //     JOIN locations AS L2 ON T2.locationId = L2.id
+  //     WHERE C.id = ?
+  //   `,
+  //     [data],
+  //   );
+  //   return res[0];
+  // }
 
   async getSeatCoachDetail({ coachId }: SeatCoachFetchingMess) {
     const res = await Coach.findOne({

@@ -8,6 +8,7 @@ import {
   Query,
   Resolver,
 } from 'type-graphql';
+import { OneTransitData, OneTripData } from '../payloads/response.interface';
 
 @ObjectType()
 class TripData {
@@ -178,6 +179,57 @@ class OneTransitResponse {
 
   @Field(() => String)
   cabName: string;
+
+  @Field(() => Int)
+  routeId: number;
+
+  @Field(() => Int)
+  drivingDuration: number;
+
+  @Field(() => Int)
+  basePrice: number;
+
+  @Field(() => String)
+  departureTerminal: string;
+
+  @Field(() => String)
+  departureAddress: string;
+
+  @Field(() => String)
+  departureLatitude: string;
+
+  @Field(() => String)
+  departureLongitude: string;
+
+  @Field(() => Int)
+  departureId: number;
+
+  @Field(() => String)
+  departureName: string;
+
+  @Field(() => String)
+  departureSubName: string;
+
+  @Field(() => String)
+  arriveTerminal: string;
+
+  @Field(() => String)
+  arriveAddress: string;
+
+  @Field(() => String)
+  arriveLatitude: string;
+
+  @Field(() => String)
+  arriveLongitude: string;
+
+  @Field(() => Int)
+  arriveId: number;
+
+  @Field(() => String)
+  arriveName: string;
+
+  @Field(() => String)
+  arriveSubName: string;
 }
 
 @ObjectType()
@@ -259,6 +311,48 @@ class OneTripResponse {
 
   @Field(() => String)
   coachName: string;
+
+  @Field(() => String)
+  fixedDepartureTerminal: string;
+
+  @Field(() => String)
+  fixedDepartureAddress: string;
+
+  @Field(() => String)
+  fixedDepartureLatitude: string;
+
+  @Field(() => String)
+  fixedDepartureLongitude: string;
+
+  @Field(() => Int)
+  fixedDepartureId: number;
+
+  @Field(() => String)
+  fixedDepartureName: string;
+
+  @Field(() => String)
+  fixedDepartureSubName: string;
+
+  @Field(() => String)
+  fixedArriveTerminal: string;
+
+  @Field(() => String)
+  fixedArriveAddress: string;
+
+  @Field(() => String)
+  fixedArriveLatitude: string;
+
+  @Field(() => String)
+  fixedArriveLongitude: string;
+
+  @Field(() => Int)
+  fixedArriveId: number;
+
+  @Field(() => String)
+  fixedArriveName: string;
+
+  @Field(() => String)
+  fixedArriveSubName: string;
 }
 
 @ObjectType()

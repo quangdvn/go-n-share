@@ -226,7 +226,8 @@ export class TransitController {
     const res = await this.transitService.getTransit(id);
 
     const cabMess: CabFetchingMess = {
-      id: res.cabId,
+      cabId: res.cabId,
+      tripId: res.tripId,
     };
 
     const cabData = await this.client
