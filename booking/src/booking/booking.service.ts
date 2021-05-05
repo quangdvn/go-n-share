@@ -107,6 +107,7 @@ export class BookingService {
         'totalPrice',
         'notes',
         'paymentMethod',
+        'bookingStatus',
       ],
     });
   }

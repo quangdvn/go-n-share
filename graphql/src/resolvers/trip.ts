@@ -263,6 +263,9 @@ class OneTripBooking {
 
   @Field(() => String)
   paymentMethod: string;
+
+  @Field(() => String)
+  bookingStatus: string;
 }
 
 @ObjectType()
