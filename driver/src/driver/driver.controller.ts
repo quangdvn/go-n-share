@@ -5,6 +5,8 @@ import {
   HttpCode,
   Inject,
   Logger,
+  Param,
+  ParseIntPipe,
   Post,
   Req,
   UseGuards,
@@ -20,6 +22,7 @@ import {
   DriverCreatedEvent,
   DriverFetchingMess,
   DriverRoles,
+  DriverSackedEvent,
   Events,
   IRequest,
   Messages,
@@ -70,6 +73,11 @@ const TransitStatusUpdated =
   process.env.NODE_ENV === 'production'
     ? Events.TransitStatusUpdated
     : Events.TransitStatusUpdatedDev;
+
+const DriverSacked =
+  process.env.NODE_ENV === 'production'
+    ? Events.DriverSacked
+    : Events.DriverSackedDev;
 
 const DriverFetching =
   process.env.NODE_ENV === 'production'
@@ -123,6 +131,18 @@ export class DriverController {
   async getTransitDrivers(@Payload() data: TransitDriverFetchingMess) {
     const res = await this.driverService.getTransitDrivers(data);
     return res;
+  }
+
+  @Get('/')
+  @HttpCode(200)
+  @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)
+  @Roles(StaffRoles.SUPERVISING)
+  async getAllDrivers() {
+    const res = await this.driverService.getAllDrivers();
+    return {
+      success: true,
+      data: res,
+    };
   }
 
   @Post('/available-schedule')
@@ -235,6 +255,27 @@ export class DriverController {
     return {
       success: true,
       data: data,
+    };
+  }
+
+  @Post('/sacking/:id')
+  @HttpCode(200)
+  @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)
+  @Roles(StaffRoles.SUPERVISING)
+  async sackDriver(@Param('id', ParseIntPipe) driverId: number) {
+    const res = await this.driverService.sackDriver(driverId);
+
+    const event: DriverSackedEvent = {
+      driverId: driverId,
+    };
+
+    this.client
+      .emit<string, DriverSackedEvent>(DriverSacked, event)
+      .subscribe(() => pubLogger.log('Event published successfully...'));
+
+    return {
+      success: true,
+      data: res,
     };
   }
 }

@@ -250,9 +250,7 @@ export class DriverService {
             dayjs(trip.arriveDate).add(trip.arriveTime, 'hours'),
           ),
         );
-        console.log('1', driver.id);
-        console.log('2', isValidOne);
-        console.log('3', isValidTwo);
+
         return isValidOne || isValidTwo;
       }
     });
@@ -282,6 +280,24 @@ export class DriverService {
     if (!curDriver.isVerify) {
       curDriver.isVerify = true;
     }
+    await curDriver.save();
+    return curDriver;
+  }
+
+  async getAllDrivers() {
+    const allDrivers = await this.driverModel.find().populate('location');
+    return allDrivers;
+  }
+
+  async sackDriver(driverId: number) {
+    const curDriver = await this.driverModel.findOne({
+      id: driverId,
+      workingStatus: WorkingStatus.WORKING,
+    });
+    if (!curDriver) {
+      throw new BadRequestException('Tài xế không tồn tại');
+    }
+    curDriver.workingStatus = WorkingStatus.RESIGN;
     await curDriver.save();
     return curDriver;
   }

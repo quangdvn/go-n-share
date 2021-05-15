@@ -92,7 +92,6 @@ export class TransitService {
       .createQueryBuilder(Transit, 'transit')
       .leftJoinAndSelect('transit.details', 'details')
       .where('transit.id = :id', { id: transitId })
-      .orderBy('transit.id')
       .getOne();
 
     if (!res) {

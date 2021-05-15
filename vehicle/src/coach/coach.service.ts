@@ -17,6 +17,19 @@ import { GetAvailableCoachesDto } from './dto/get-avai-coaches.dto';
 export class CoachService {
   constructor() {}
 
+  async getAllCoaches() {
+    const res = await Coach.find({
+      join: {
+        alias: 'coach',
+        leftJoinAndSelect: {
+          coachType: 'coach.type',
+          route: 'coach.route',
+        },
+      },
+    });
+    return res;
+  }
+
   async getTripCoach(data: CoachDetailFetchingMess) {
     const res = await getManager().query(
       `

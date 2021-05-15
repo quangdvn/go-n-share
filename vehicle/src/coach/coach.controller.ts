@@ -92,6 +92,18 @@ export class CoachController {
   //   return this.coachService.gettTripCoach(data);
   // }
 
+  @Get('/')
+  @HttpCode(200)
+  @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)
+  @Roles(StaffRoles.SUPERVISING)
+  async getAllCoaches() {
+    const res = await this.coachService.getAllCoaches();
+    return {
+      success: true,
+      data: res,
+    };
+  }
+
   @Get('/routes')
   @HttpCode(200)
   @UseGuards(RequireAuthStaffGuard, StaffRolesGuard)

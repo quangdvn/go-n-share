@@ -76,7 +76,7 @@ export class CabService {
     return { ...firstRes[0], ...secondRes[0] };
   }
 
-  // async getTransitCab(cabId: number, tripId: number) {
+  // async gettTransitCab(cabId: number, tripId: number) {
   //   const firstRes = await getManager().query(
   //     `
   //     SELECT C.id as cabId, C.numberPlate, CT.seatNumber,
@@ -96,7 +96,8 @@ export class CabService {
   //     L1.id AS departureId, L1.name AS departureName, L1.subName AS departureSubName,
   //     T2.name AS arriveTerminal, T2.address AS arriveAddress,
   //     T2.latitude AS arriveLatitude, T2.longitude AS arriveLongitude,
-  //     L2.id AS departureId, L2.name AS departureName, L2.subName AS departureSubName
+  //     L2.id AS departureId, L2.name AS departureName, L2.subName AS departureSubName,
+  //     TR.id AS fixedTripId
   //     FROM routes AS R
   //     JOIN coaches AS C ON C.routeId = R.id
   //     JOIN terminals AS T1 ON R.departureId = T1.id
@@ -109,6 +110,6 @@ export class CabService {
   //     [tripId],
   //   );
 
-  //   return { ...firstRes[0], ...secondRes[0] };
+  //   return { firstData: { ...firstRes[0] }, secondeData: { ...secondRes[0] } };
   // }
 }

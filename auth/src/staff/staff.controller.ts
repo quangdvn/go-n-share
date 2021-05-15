@@ -11,8 +11,13 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { Events, StaffCreatedEvent, StaffRoles } from '@quangdvnnnn/go-n-share';
+import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
+import {
+  Events,
+  StaffCreatedEvent,
+  StaffRoles,
+  StaffSackedEvent,
+} from '@quangdvnnnn/go-n-share';
 import { Request, Response } from 'express';
 import { AUTH_SERVICE, __prod__ } from '../constants';
 import {
@@ -31,7 +36,13 @@ const StaffCreated =
     ? Events.StaffCreated
     : Events.StaffCreatedDev;
 
-const logger = new Logger('EventPublish');
+const StaffSacked =
+  process.env.NODE_ENV === 'production'
+    ? Events.StaffSacked
+    : Events.StaffSackedDev;
+
+const subLogger = new Logger('EventSubcribe');
+const pubLogger = new Logger('EventPublish');
 
 @Controller('staff')
 export class StaffController {
@@ -39,6 +50,12 @@ export class StaffController {
     private readonly staffService: StaffService,
     @Inject(AUTH_SERVICE) private readonly client: ClientProxy,
   ) {}
+
+  @EventPattern(StaffSacked)
+  async sackStaff(@Payload() data: StaffSackedEvent) {
+    subLogger.log('Event received successfully...');
+    return this.staffService.sackStaff(data);
+  }
 
   @Post('/create')
   @HttpCode(201)
@@ -63,12 +80,8 @@ export class StaffController {
     };
     this.client
       .emit<string, StaffCreatedEvent>(StaffCreated, event)
-      .subscribe(() => logger.log('Event published successfully...'));
-    // this.publisher
-    //   .emit<string, StaffCreatedEvent>(StaffCreated, event)
-    //   .subscribe((id) => {
-    //     console.log('Published message with id:', id);
-    //   });
+      .subscribe(() => pubLogger.log('Event published successfully...'));
+
     return {
       success: true,
       data: newStaff,

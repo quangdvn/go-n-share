@@ -8,9 +8,10 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 import {
   DriverCreatedEvent,
+  DriverSackedEvent,
   Events,
   StaffRoles,
 } from '@quangdvnnnn/go-n-share';
@@ -28,7 +29,13 @@ const DriverCreated =
     ? Events.DriverCreated
     : Events.DriverCreatedDev;
 
-const logger = new Logger('EventPublish');
+const DriverSacked =
+  process.env.NODE_ENV === 'production'
+    ? Events.DriverSacked
+    : Events.DriverSackedDev;
+
+const subLogger = new Logger('EventSubcribe');
+const pubLogger = new Logger('EventPublish');
 
 @Controller('driver')
 export class DriverController {
@@ -36,6 +43,12 @@ export class DriverController {
     private readonly driverService: DriverService,
     @Inject(AUTH_SERVICE) private client: ClientProxy,
   ) {}
+
+  @EventPattern(DriverSacked)
+  async sackDriver(@Payload() data: DriverSackedEvent) {
+    subLogger.log('Event received successfully...');
+    return this.driverService.sackDriver(data);
+  }
 
   @Post('/create')
   @HttpCode(201)
@@ -72,7 +85,7 @@ export class DriverController {
     };
     this.client
       .emit<string, DriverCreatedEvent>(DriverCreated, event)
-      .subscribe(() => logger.log('Event published successfully...'));
+      .subscribe(() => pubLogger.log('Event published successfully...'));
 
     return {
       success: true,

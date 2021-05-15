@@ -3,7 +3,8 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { WorkingStatus } from '@quangdvnnnn/go-n-share';
+import { StaffSackedEvent, WorkingStatus } from '@quangdvnnnn/go-n-share';
+import { getConnection } from 'typeorm';
 import {
   CreateStaffInput,
   StaffLoginPayload,
@@ -49,5 +50,16 @@ export class StaffService {
     } else {
       throw new BadRequestException('Thông tin đăng nhập bị sai');
     }
+  }
+
+  async sackStaff(data: StaffSackedEvent) {
+    const returnData = await getConnection()
+      .createQueryBuilder()
+      .update(Staff)
+      .set({ workingStatus: WorkingStatus.RESIGN })
+      .where('id = :id', { id: data.staffId })
+      .execute();
+
+    return returnData;
   }
 }

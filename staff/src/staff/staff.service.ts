@@ -3,7 +3,12 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { StaffCreatedEvent, WorkingStatus } from '@quangdvnnnn/go-n-share';
+import {
+  StaffCreatedEvent,
+  StaffRoles,
+  WorkingStatus,
+} from '@quangdvnnnn/go-n-share';
+import { Not } from 'typeorm';
 import { Staff } from './staff.entity';
 
 @Injectable()
@@ -24,6 +29,14 @@ export class StaffService {
     }
   }
 
+  async getAllSfaff() {
+    const allStaff = await Staff.find();
+    if (!allStaff) {
+      throw new BadRequestException('Có lỗi trong hệ thống');
+    }
+    return allStaff;
+  }
+
   async getStaffInfo(staffId: number) {
     const curStaff = await Staff.findOne({
       where: { id: staffId, workingStatus: WorkingStatus.WORKING },
@@ -32,5 +45,23 @@ export class StaffService {
       throw new BadRequestException('Có lỗi trong hệ thống');
     }
     return curStaff;
+  }
+
+  async sackStaff(staffId: number) {
+    const curStaff = await Staff.findOne({
+      where: {
+        id: staffId,
+        workingStatus: WorkingStatus.WORKING,
+        role: Not(StaffRoles.SUPERVISING),
+      },
+    });
+
+    if (!curStaff) {
+      throw new BadRequestException('Nhân viên không tồn tại');
+    }
+    curStaff.workingStatus = WorkingStatus.RESIGN;
+
+    const res = await curStaff.save();
+    return res;
   }
 }

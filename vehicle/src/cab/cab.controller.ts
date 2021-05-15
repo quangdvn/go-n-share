@@ -43,10 +43,10 @@ export class CabController {
   }
 
   // @Post('test')
-  // async getTransitCab(
+  // async gettTransitCab(
   //   @Body('cabId') cabId: number,
   //   @Body('tripId') tripId: number,
   // ) {
-  //   return this.cabService.getTransitCab(cabId, tripId);
+  //   return this.cabService.gettTransitCab(cabId, tripId);
   // }
 }

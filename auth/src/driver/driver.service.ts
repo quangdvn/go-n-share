@@ -3,7 +3,8 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { WorkingStatus } from '@quangdvnnnn/go-n-share';
+import { DriverSackedEvent, WorkingStatus } from '@quangdvnnnn/go-n-share';
+import { getConnection } from 'typeorm';
 import {
   CreateDriverInput,
   DriverLoginPayload,
@@ -43,5 +44,16 @@ export class DriverService {
     } else {
       throw new BadRequestException('Thông tin đăng nhập bị sai');
     }
+  }
+
+  async sackDriver(data: DriverSackedEvent) {
+    const returnData = await getConnection()
+      .createQueryBuilder()
+      .update(Driver)
+      .set({ workingStatus: WorkingStatus.RESIGN })
+      .where('id = :id', { id: data.driverId })
+      .execute();
+
+    return returnData;
   }
 }

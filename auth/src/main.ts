@@ -1,11 +1,20 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { AppModule } from './app.module';
-import { __prod__ } from './constants';
+import { AUTH_SERVICE, __prod__ } from './constants';
 import { RedisClient } from './redis';
+
+const microserviceOptions: MicroserviceOptions = {
+  transport: Transport.NATS,
+  options: {
+    url: process.env.NATS_URL,
+    queue: AUTH_SERVICE,
+  },
+};
 
 async function bootstrap() {
   if (!process.env.APP_PORT) {
@@ -98,12 +107,25 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.APP_PORT, () => {
-    logger.log(`Auth Service is listening on port ${process.env.APP_PORT} ...`);
-    if (__prod__) {
-      logger.log('Auth Service is running on production ...');
-    }
+  const microservice = app.connectMicroservice(microserviceOptions);
+  microservice.listen(() => {
+    logger.log('Auth Microservice is running ...');
+    app.listen(process.env.APP_PORT, () => {
+      logger.log(
+        `Auth Service is listening on port ${process.env.APP_PORT} ...`,
+      );
+      if (__prod__) {
+        logger.log('Auth Service is running on production ...');
+      }
+    });
   });
+
+  // await app.listen(process.env.APP_PORT, () => {
+  //   logger.log(`Auth Service is listening on port ${process.env.APP_PORT} ...`);
+  //   if (__prod__) {
+  //     logger.log('Auth Service is running on production ...');
+  //   }
+  // });
 }
 
 bootstrap();

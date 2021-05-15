@@ -13,7 +13,6 @@ import {
 import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
 import {
   AllTripFetchingMess,
-  BookingCreatedEvent,
   BookingStatus,
   BookingVerifiedEvent,
   Events,
@@ -48,10 +47,10 @@ const TransitDetailCreating =
     ? Messages.TransitDetailCreating
     : Messages.TransitDetailCreatingDev;
 
-const BookingCreated =
-  process.env.NODE_ENV === 'production'
-    ? Events.BookingCreated
-    : Events.BookingCreatedDev;
+// const BookingCreated =
+//   process.env.NODE_ENV === 'production'
+//     ? Events.BookingCreated
+//     : Events.BookingCreatedDev;
 
 const BookingVerified =
   process.env.NODE_ENV === 'production'
@@ -131,30 +130,30 @@ export class BookingController {
       transtDetailId,
     );
 
-    const bookingEvent: BookingCreatedEvent = {
-      id: res.id,
-      tripId: res.tripId,
-      bookingName: res.bookingName,
-      bookingMail: res.bookingMail,
-      bookingPhone: res.bookingPhone,
-      totalPrice: res.totalPrice,
-      hasTransit: res.hasTransit,
-      transitDetailId: res.transitDetailId,
-      notes: res.notes,
-      isVerify: res.isVerify,
-      bookingStatus: res.bookingStatus,
-      paymentMethod: res.paymentMethod,
-      transitDetail: {
-        address: createBookingDto.transitDetail.address,
-        latitude: createBookingDto.transitDetail.latitude,
-        longitude: createBookingDto.transitDetail.longitude,
-        notes: createBookingDto.transitDetail.notes,
-      },
-    };
+    // const bookingEvent: BookingCreatedEvent = {
+    //   id: res.id,
+    //   tripId: res.tripId,
+    //   bookingName: res.bookingName,
+    //   bookingMail: res.bookingMail,
+    //   bookingPhone: res.bookingPhone,
+    //   totalPrice: res.totalPrice,
+    //   hasTransit: res.hasTransit,
+    //   transitDetailId: res.transitDetailId,
+    //   notes: res.notes,
+    //   isVerify: res.isVerify,
+    //   bookingStatus: res.bookingStatus,
+    //   paymentMethod: res.paymentMethod,
+    //   transitDetail: {
+    //     address: createBookingDto.transitDetail.address || null,
+    //     latitude: createBookingDto.transitDetail.latitude || null,
+    //     longitude: createBookingDto.transitDetail.longitude || null,
+    //     notes: createBookingDto.transitDetail.notes || null,
+    //   },
+    // };
 
-    this.client
-      .emit<string, BookingCreatedEvent>(BookingCreated, bookingEvent)
-      .subscribe(() => pubLogger.log('Event published successfully...'));
+    // this.client
+    //   .emit<string, BookingCreatedEvent>(BookingCreated, bookingEvent)
+    //   .subscribe(() => pubLogger.log('Event published successfully...'));
 
     return {
       success: true,
