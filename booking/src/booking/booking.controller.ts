@@ -94,7 +94,7 @@ export class BookingController {
       .send<TripFetchingResponse, TripFetchingMess>(TripFetching, tripMessage)
       .toPromise();
     if (!tripData.success) {
-      throw new BadRequestException('Chuyến đi không tồn tại');
+      throw new BadRequestException('Chuyến đi không còn chỗ trống');
     }
     let transtDetailId = null as number | null;
     if (createBookingDto.hasTransit) {
